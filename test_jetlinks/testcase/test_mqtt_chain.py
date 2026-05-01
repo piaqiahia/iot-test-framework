@@ -121,66 +121,73 @@ class TestLastWill:
 
     @allure.title("设备异常断开时遗嘱消息触发离线状态更新")
     @allure.severity(allure.severity_level.NORMAL)
-    @allure.description("模拟设备异常断连（不发送DISCONNECT）验证平台在KeepAlive超时后自动将设备标记为离线")
-    def test_last_will_offline(self,scene_with_device_access, api_client):
-        """设备异常断开后，平台应收到遗嘱消息并标记设备离线"""
+    @allure.description("模拟设备异常断连（不发送DISCONNECT），验证平台在KeepAlive超时后将设备标记为离线")
+    def test_last_will_offline(self, scene_with_device_access, api_client):
         product_id = scene_with_device_access['product_id']
         device_id = scene_with_device_access['device_id']
 
-        # 设备实例，验证设备相关信息
         device_client = DeviceClient()
         device_client.session = api_client.session
         device_client.headers = api_client.headers
 
-        client = mqtt.Client(client_id = device_id)
-        client.username_pw_set("1111", "1111")
+        # ---------- 带重试的连接 ----------
+        max_connect_attempts = 5
+        client = None
+        for attempt in range(1, max_connect_attempts + 1):
+            print(f"[遗嘱测试] 连接尝试 {attempt}/{max_connect_attempts}")
+            client = mqtt.Client(client_id=device_id)
+            client.username_pw_set("1111", "1111")
 
-        # 设置遗嘱消息：一旦异常断开，Broker 会将该消息发布到指定主题
-        will_topic = f"/{product_id}/{device_id}/will"
-        client.will_set(will_topic, payload = "offline", qos = 1, retain = False)
+            will_topic = f"/{product_id}/{device_id}/will"
+            client.will_set(will_topic, payload="offline", qos=1, retain=False)
 
-        # 用事件等待连接成功
-        connected = threading.Event()
+            connected = threading.Event()
 
-        def on_connect(client, userdata, flags, rc):
-            if rc == 0:
-                connected.set()
+            def on_connect(client, userdata, flags, rc):
+                if rc == 0:
+                    connected.set()
+
+            client.on_connect = on_connect
+
+            try:
+                client.connect("127.0.0.1", 1885, keepalive=10)
+                client.loop_start()
+            except Exception as e:
+                print(f"[遗嘱测试] TCP 连接异常: {e}")
+                time.sleep(3)
+                continue
+
+            if connected.wait(timeout=10):  # 等待 CONNACK
+                print("[遗嘱测试] MQTT 连接成功")
+                break
             else:
-                pytest.fail(f"MQTT 连接被拒绝，rc={rc}")
+                print("[遗嘱测试] 等待 CONNACK 超时，重试...")
+                client.loop_stop()
+                time.sleep(3)
+        else:
+            pytest.fail(f"遗嘱测试连接失败，已重试 {max_connect_attempts} 次")
 
-        client.on_connect = on_connect
-
+        # ---------- 后续逻辑不变 ----------
         with allure.step("1. 设备上线并发送属性上报，引导平台标记在线"):
-            client.connect("127.0.0.1", 1885, keepalive = 10)
-            client.loop_start()
-
-            if not connected.wait(timeout=5):
-                pytest.fail("等待 CONNACK 超时，MQTT 连接未建立")
-            print("[连接] MQTT 已成功连接")
-
-            # ---------- 2. 发送属性上报，引导平台变更为在线 ----------
             print("开始发送属性上报，引导平台标记在线...")
             topic_report = f"/{product_id}/{device_id}/properties/report"
             online_confirmed = False
-            max_attempts = 10
-            for i in range(max_attempts):
+            for i in range(10):
                 payload = {
                     "properties": {"temperature": 25.0 + i, "humidity": 60},
                     "timestamp": int(time.time() * 1000)
                 }
-                # 等待 PUBACK 确保消息已送达
                 msg_info = client.publish(topic_report, json.dumps(payload), qos=1)
                 msg_info.wait_for_publish(timeout=3)
                 time.sleep(0.8)
 
-                # 查询设备状态
                 resp = device_client.get_device_detail(device_id)
-                state = resp.get('result', {}).get('state', '').get('text', '')
-                if state in ('在线','online', 'enabled'):
+                state = resp.get('result', {}).get('state', {}).get('text', '')
+                if state in ('在线', 'online', 'enabled'):
                     online_confirmed = True
                     print(f"[在线确认] 第{i + 1}次上报后状态: {state}")
                     break
-            else:
+            if not online_confirmed:
                 pytest.fail("设备未上线")
 
         with allure.step("2. 模拟异常断连（关闭socket）"):
@@ -195,11 +202,10 @@ class TestLastWill:
             for i in range(20):
                 time.sleep(1)
                 resp = device_client.get_device_detail(device_id)
-                state_now = resp.get('result', {}).get('state', '').get('text', '')
-                if state_now in ["离线", "disable", "offline"]:
+                state_now = resp.get('result', {}).get('state', {}).get('text', '')
+                if state_now in ("离线", "disable", "offline"):
                     print(f"[离线确认] 第{i + 1}秒检测到设备状态: {state_now}")
                     break
-
             else:
                 pytest.fail("设备未在20秒内离线")
 

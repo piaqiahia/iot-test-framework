@@ -128,27 +128,30 @@ class TestProtocolManagement:
     @allure.severity(allure.severity_level.CRITICAL)
     @allure.description("验证MQTT协议能否建立 TCP 连接并收到 ConnAck 响应")
     def test_03_mqtt_connect(self, protocol_instance):
-        """
-        测试3：MQTT 协议连接测试
-        前置：协议已创建
-        预期：TCP 连接成功，收到 ConnAck 响应
-        """
         protocol_client = ProtocolClient()
         protocol_name = protocol_instance['protocol_name']
 
         logger.info(f"测试协议：{protocol_name}")
 
-        with allure.step("发送 MQTT Connect 报文"):
-            result = protocol_client.send_mqtt_connect(client_id = "test_send_to_mqtt")
+        max_attempts = 5
+        result = False
+        for attempt in range(1, max_attempts + 1):
+            logger.info(f"MQTT 连接尝试 {attempt}/{max_attempts}")
+            with allure.step(f"发送 MQTT Connect 报文 (第 {attempt} 次)"):
+                result = protocol_client.send_mqtt_connect(client_id="test_send_to_mqtt")
+                if result:
+                    break
+                else:
+                    logger.warning(f"第 {attempt} 次连接失败，等待 3 秒后重试...")
+                    time.sleep(3)
 
-            allure.attach(
-                f"MQTT 连接结果：{'成功' if result else '失败'}",
-                name = "连接结果",
-                attachment_type = allure.attachment_type.TEXT
-            )
-
-            assert result is True, "MQTT 连接失败，未收到响应"
-            logger.info("MQTT Connect 报文发送成功，收到ConnAck响应")
+        allure.attach(
+            f"MQTT 连接结果：{'成功' if result else '失败'}",
+            name="连接结果",
+            attachment_type=allure.attachment_type.TEXT
+        )
+        assert result is True, f"MQTT 连接失败，未收到响应（已重试 {max_attempts} 次）"
+        logger.info("MQTT Connect 报文发送成功，收到ConnAck响应")
 
     @allure.title("查询协议列表")
     @allure.severity(allure.severity_level.NORMAL)

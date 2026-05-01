@@ -21,7 +21,7 @@ class TestDeviceScenarioCompleteLink:
             scene_with_device_access,
             mqtt_device_simulator,
             api_client,
-    ):
+    ):#
         """
         完整链路测试（被动模式，依赖平台规则）
         所有温度打印由夹具完成，测试只负责等待状态转换并断言。

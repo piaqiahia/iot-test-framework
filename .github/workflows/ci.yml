@@ -46,6 +46,7 @@ jobs:
       - name: Run tests
         working-directory: test_jetlinks
         env:
+          PYTHONPATH: ${{ github.workspace }}   # 关键：让 Python 能找到 test_jetlinks 包
           JETLINKS_URL: http://localhost:8848
           MQTT_BROKER: localhost
           MQTT_PORT: 1885

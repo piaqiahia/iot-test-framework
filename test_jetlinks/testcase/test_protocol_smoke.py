@@ -129,23 +129,29 @@ class TestProtocolManagement:
 
     @allure.title("MQTT 协议连接测试")
     @allure.severity(allure.severity_level.CRITICAL)
-    @allure.description("验证 MQTT 协议能否建立 TCP 连接并收到 ConnAck 响应")
-    def test_03_mqtt_connect(self, protocol_instance):
+    @allure.description("验证使用真实设备 ID 能否建立 MQTT 连接并收到 ConnAck")
+    def test_03_mqtt_connect(self, protocol_instance, device_access_chain):
+        """
+        使用 device_access_chain 创建的真实设备 ID 进行 MQTT 连接测试，
+        确保协议栈可用且 Broker 对合法设备返回 CONNACK。
+        """
+        device_id = device_access_chain['device_id']
+        product_id = device_access_chain['product_id']
         protocol_name = protocol_instance['protocol_name']
-        logger.info(f"测试协议：{protocol_name}")
+        print(f"测试协议：{protocol_name}，设备：{device_id}")
 
         max_attempts = 10
         connected = False
 
         for attempt in range(1, max_attempts + 1):
-            logger.info(f"MQTT 连接尝试 {attempt}/{max_attempts}")
-            client = mqtt.Client(client_id="test_protocol_conn")
+            print(f"MQTT 连接尝试 {attempt}/{max_attempts}")
+            client = mqtt.Client(client_id=device_id)
             client.username_pw_set("1111", "1111")
             conn_evt = threading.Event()
 
             def on_connect(client, userdata, flags, rc):
-                # 只要收到 CONNACK，无论 rc 是多少，都认为连通成功
-                conn_evt.set()
+                if rc == 0:
+                    conn_evt.set()
 
             client.on_connect = on_connect
 
@@ -154,7 +160,7 @@ class TestProtocolManagement:
                 client.loop_start()
             except Exception as e:
                 logger.warning(f"TCP 连接失败: {e}")
-                time.sleep(3)
+                time.sleep(5)
                 continue
 
             if conn_evt.wait(timeout=10):
@@ -163,9 +169,9 @@ class TestProtocolManagement:
                 client.loop_stop()
                 break
             else:
-                logger.warning("等待 CONNACK 超时")
+                logger.warning(f"第 {attempt} 次等待 CONNACK 超时")
                 client.loop_stop()
-                time.sleep(3)
+                time.sleep(5)
 
         allure.attach(
             f"MQTT 连接结果：{'成功' if connected else '失败'}",
@@ -173,7 +179,7 @@ class TestProtocolManagement:
             attachment_type=allure.attachment_type.TEXT
         )
         assert connected, f"MQTT 连接失败，已重试 {max_attempts} 次"
-        logger.info("MQTT 协议连接成功，收到 ConnAck 响应")
+        print("MQTT 协议连接成功，收到 ConnAck 响应")
 
     @allure.title("查询协议列表")
     @allure.severity(allure.severity_level.NORMAL)

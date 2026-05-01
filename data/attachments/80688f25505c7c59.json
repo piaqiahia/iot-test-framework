@@ -1,0 +1,10 @@
+{
+  "message": "success",
+  "result": {
+    "added": 0,
+    "updated": 1,
+    "total": 1
+  },
+  "status": 200,
+  "timestamp": 1777656074503
+}

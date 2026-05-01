@@ -1,0 +1,35 @@
+{
+  "message": "success",
+  "result": {
+    "id": "2050264300440068096",
+    "name": "DUPLICATE_TEST_GW",
+    "description": "Auto-created MQTT Gateway for DUPLICATE_TEST_GW",
+    "type": "MQTT_SERVER",
+    "state": {
+      "text": "正常",
+      "value": "enabled"
+    },
+    "creatorId": "21232f297a57a5a743894a0e4a801fc3",
+    "createTime": 1777656075949,
+    "creatorName": "Administrator",
+    "modifierId": "21232f297a57a5a743894a0e4a801fc3",
+    "modifyTime": 1777656075949,
+    "modifierName": "Administrator",
+    "configuration": {
+      "secure": false,
+      "maxMessageSize": 8192,
+      "publicPort": 1885,
+      "publicHost": "127.0.0.1",
+      "port": 1885,
+      "host": "0.0.0.0"
+    },
+    "shareCluster": true,
+    "typeObject": {
+      "name": "MQTT服务",
+      "text": "MQTT服务",
+      "value": "MQTT_SERVER"
+    }
+  },
+  "status": 200,
+  "timestamp": 1777656075957
+}

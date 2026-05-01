@@ -470,7 +470,7 @@ def temp_binding(binding_client, create_mqtt_gateway, protocol_instance):
 @pytest.fixture
 def device_access_chain(api_client, create_product_fixture, temp_binding, product_write_api, product_read_api):
     """
-    【核心聚合夹具】完整的设备接入链路
+    【核心聚合夹具】完整的设备接入链路1
     依赖：
     - create_product_fixture: 创建产品
     - temp_binding: 自动创建网关+协议+绑定

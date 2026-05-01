@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+langchain_env/
+venv/
+
+# pytest
+.pytest_cache/
+
+# Allure 报告
+allure-results/
+allure-report/
+
+# IDE
+.idea/
+.vscode/
+
+# 其他
+.DS_Store

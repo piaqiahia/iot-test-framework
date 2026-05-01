@@ -1,0 +1,71 @@
+name: IoT Platform E2E Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Start all services
+        run: |
+          cd docker
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+          cd ..
+
+      - name: Wait for JetLinks to be ready
+        run: |
+          echo "Waiting for JetLinks API..."
+          for i in {1..60}; do
+            if curl -s http://localhost:8848/authorize/login > /dev/null; then
+              echo "JetLinks is ready!"
+              break
+            fi
+            sleep 3
+          done
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install test dependencies
+        working-directory: test_jetlinks
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install allure-pytest
+
+      - name: Run tests
+        working-directory: test_jetlinks
+        env:
+          JETLINKS_URL: http://localhost:8848
+          MQTT_BROKER: localhost
+          MQTT_PORT: 1885
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          DB_HOST: localhost
+          DB_PORT: 5432
+        run: |
+          pytest --alluredir=allure-results -s
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: test_jetlinks/allure-results/
+
+      - name: Stop services
+        if: always()
+        run: |
+          cd docker
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml down
+          cd ..

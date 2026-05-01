@@ -1154,8 +1154,8 @@ def mqtt_device_simulator(scene_with_device_access):
     # ---------- 启动（带重试） ----------
     print(f"[启动] 连接 {BROKER}:{PORT}，ClientID={CLIENT_ID}")
     wait_for_broker(BROKER, PORT)
-    print("[启动] 等待平台内部服务同步（10 秒）...")
-    time.sleep(10)
+    print("[启动] 等待平台内部服务同步（15 秒）...")
+    time.sleep(15)
 
     max_connect_retries = 5
     connection_ok = False

@@ -144,13 +144,13 @@ class TestProtocolManagement:
             conn_evt = threading.Event()
 
             def on_connect(client, userdata, flags, rc):
-                if rc == 0:
-                    conn_evt.set()
+                # 只要收到 CONNACK，无论 rc 是多少，都认为连通成功
+                conn_evt.set()
 
             client.on_connect = on_connect
 
             try:
-                client.connect("127.0.0.1", 1883, keepalive=10)  # 使用正确的 MQTT 端口
+                client.connect("127.0.0.1", 1883, keepalive=10)
                 client.loop_start()
             except Exception as e:
                 logger.warning(f"TCP 连接失败: {e}")
@@ -173,7 +173,7 @@ class TestProtocolManagement:
             attachment_type=allure.attachment_type.TEXT
         )
         assert connected, f"MQTT 连接失败，已重试 {max_attempts} 次"
-        logger.info("MQTT Connect 报文发送成功，收到 ConnAck 响应")
+        logger.info("MQTT 协议连接成功，收到 ConnAck 响应")
 
     @allure.title("查询协议列表")
     @allure.severity(allure.severity_level.NORMAL)

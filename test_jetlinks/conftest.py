@@ -1151,20 +1151,20 @@ def mqtt_device_simulator(scene_with_device_access):
     client.on_connect = on_connect
     client.on_message = on_message
 
-    # ---------- 启动（高容错重试） ----------
+    # ---------- 启动（带重试） ----------
     print(f"[启动] 连接 {BROKER}:{PORT}，ClientID={CLIENT_ID}")
     wait_for_broker(BROKER, PORT)
-    print("[启动] 等待平台内部服务同步（15秒）...")
-    time.sleep(15)
+    print("[启动] 等待平台内部服务同步（10 秒）...")
+    time.sleep(10)
 
-    max_connect_retries = 10  # 增加重试次数
+    max_connect_retries = 5
     connection_ok = False
     last_rc = None
 
     for attempt in range(1, max_connect_retries + 1):
         print(f"[连接] 第 {attempt}/{max_connect_retries} 次尝试...")
 
-        # 每次重试都用全新客户端
+        # 每次重试都创建全新的客户端，避免旧状态干扰
         client = mqtt.Client(client_id=CLIENT_ID)
         client.username_pw_set(USERNAME, PASSWORD)
         client.on_message = on_message
@@ -1197,7 +1197,7 @@ def mqtt_device_simulator(scene_with_device_access):
         last_rc = connection_rc
         if connection_rc == 0:
             print("[连接] MQTT 连接成功 (rc=0)")
-            # 必须手动调用原有的 on_connect 逻辑（订阅、首报、启动状态机）
+            # 立刻执行原有的 on_connect 逻辑：订阅、首报、启动状态机
             on_connect(client, None, None, 0)
             connection_ok = True
             break
@@ -1210,7 +1210,7 @@ def mqtt_device_simulator(scene_with_device_access):
     if not connection_ok:
         raise ConnectionError(f"MQTT 连接失败，最后错误码: {last_rc}")
 
-    # 此时 on_connect 已被触发，first_report_event 已被设置，直接等待
+    # 等待首条属性上报（状态机启动后会立即上报一条）
     print("[连接] 等待首次属性上报...")
     if not thread_control['first_report_event'].wait(timeout=15):
         raise TimeoutError("设备已连接但未在 15 秒内完成首条属性上报")

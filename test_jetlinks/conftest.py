@@ -1155,8 +1155,8 @@ def mqtt_device_simulator(scene_with_device_access):
     # ---------- 启动（带重试） ----------
     print(f"[启动] 连接 {BROKER}:{PORT}，ClientID={CLIENT_ID}")
     wait_for_broker(BROKER, PORT)
-    print("[启动] 等待平台内部服务同步（15 秒）...")
-    time.sleep(15)
+    print("[启动] 等待平台内部服务同步（10 秒）...")
+    time.sleep(10)
 
     max_connect_retries = 5
     connection_ok = False
@@ -1188,8 +1188,8 @@ def mqtt_device_simulator(scene_with_device_access):
             time.sleep(5)
             continue
 
-        # 等待 CONNACK，最多 15 秒
-        if not connection_result_event.wait(timeout=15):
+        # 等待 CONNACK，最多 10 秒
+        if not connection_result_event.wait(timeout = 10):
             print("[连接] 未收到 CONNACK，重试...")
             client.loop_stop()
             time.sleep(5)

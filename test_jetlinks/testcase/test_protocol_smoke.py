@@ -1,9 +1,12 @@
+import threading
+
 import pytest
 import time
 import allure
 import json
 import logging
 from pathlib import Path
+import paho.mqtt.client as mqtt
 from test_jetlinks.common.api_client import ProtocolClient
 
 # 配置日志

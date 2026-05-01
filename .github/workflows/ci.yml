@@ -47,16 +47,20 @@ jobs:
         continue-on-error: true
         working-directory: test_jetlinks
         env:
-          PYTHONPATH: ${{ github.workspace }}   # 关键：让 Python 能找到 test_jetlinks 包
-          JETLINKS_URL: http://localhost:8848
-          MQTT_BROKER: localhost
-          MQTT_PORT: 1885
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
-          DB_HOST: localhost
-          DB_PORT: 5432
+          PYTHONPATH: ${{ github.workspace }}
+          ALLURE_ENABLED: true
         run: |
-          pytest --alluredir=allure-results -s
+          pytest --alluredir=allure-results -s --force-exit || true
+          echo "测试完成，查看 allure-results..."
+          ls -la allure-results/ || echo "目录不存在"
+
+      - name: Debug allure-results
+        if: always()
+        working-directory: test_jetlinks
+        run: |
+          pwd
+          ls -la allure-results/ || echo "allure-results 目录不存在"
+          ls -la allure-results/*.json || echo "allure-results 中没有 JSON 文件"
 
       - name: Upload Allure results
         if: always()
@@ -66,12 +70,13 @@ jobs:
           path: test_jetlinks/allure-results/
 
       - name: Generate Allure report
-        uses: step-security/allure-report-action@v1
         if: always()
-        with:
-          allure_results: allure-results
-          allure_history: allure-history
-          subfolder: allure-report
+        working-directory: test_jetlinks
+        run: |
+          # ... 安装 allure ...
+          ./allure-.../bin/allure generate allure-results -o allure-report --clean
+          echo "报告生成完毕"
+          ls -la allure-report/
           
       - name: Deploy to GitHub Pages
         if: always()

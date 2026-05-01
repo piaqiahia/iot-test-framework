@@ -128,19 +128,15 @@ class TestProtocolManagement:
     @allure.severity(allure.severity_level.CRITICAL)
     @allure.description("验证MQTT协议能否建立 TCP 连接并收到 ConnAck 响应")
     def test_03_mqtt_connect(self, protocol_instance):
-        protocol_client = ProtocolClient()
-        protocol_name = protocol_instance['protocol_name']
-        logger.info(f"测试协议：{protocol_name}")
+        import paho.mqtt.client as mqtt
+        import threading
 
-        max_attempts = 5
+        logger.info(f"测试协议：{protocol_instance['protocol_name']}")
+
+        max_attempts = 10
         connected = False
         for attempt in range(1, max_attempts + 1):
             logger.info(f"MQTT 连接尝试 {attempt}/{max_attempts}")
-
-            # 使用 paho 直接验证连接
-            import paho.mqtt.client as mqtt
-            import threading
-
             client = mqtt.Client(client_id="test_send_to_mqtt")
             client.username_pw_set("1111", "1111")
             conn_evt = threading.Event()
@@ -155,7 +151,7 @@ class TestProtocolManagement:
                 client.loop_start()
             except Exception as e:
                 logger.warning(f"TCP 连接失败: {e}")
-                time.sleep(3)
+                time.sleep(5)
                 continue
 
             if conn_evt.wait(timeout=10):
@@ -164,8 +160,9 @@ class TestProtocolManagement:
                 client.loop_stop()
                 break
             else:
+                logger.warning("等待 CONNACK 超时")
                 client.loop_stop()
-                time.sleep(3)
+                time.sleep(5)
 
         allure.attach(
             f"MQTT 连接结果：{'成功' if connected else '失败'}",

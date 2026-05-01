@@ -40,7 +40,8 @@ def product_read_api(api_client):
     # 直接实例化 ProductReadApi，传入基础 URL 和账号密码
     # __init__ 会自动调用 login
     api = ProductReadApi(base_url = BASE_URL, username = USERNAME, password = PASSWORD)
-
+    api.session = api_client.session
+    api.headers = api_client.headers
     # 校验登录是否成功
     assert api.token is not None, "ProductReadApi 登录失败！"
     print(f"[setup]ProductReadApi初始化成功,Token:{api.token[:20]}...")

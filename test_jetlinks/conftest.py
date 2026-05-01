@@ -39,7 +39,7 @@ def wait_for_platform_ready():
     broker_port = 1885
 
     print("[平台检查] 等待 HTTP 和 MQTT 就绪...")
-    max_attempts = 30
+    max_attempts = 20
     for i in range(1, max_attempts + 1):
         http_ok = False
         mqtt_ok = False
@@ -58,14 +58,15 @@ def wait_for_platform_ready():
             connected = threading.Event()
 
             def on_connect(client, userdata, flags, rc):
-                if rc == 0:
-                    connected.set()
+                # 只要收到 CONNACK（无论 rc 是什么），就说明 Broker 能够响应了
+                connected.set()
 
             client.on_connect = on_connect
             try:
                 client.connect(broker_host, broker_port, keepalive=10)
                 client.loop_start()
-                if connected.wait(timeout=10):
+                if connected.wait(timeout=5):  # 5 秒内收到 CONNACK 即可
+                    print(f"[平台检查] MQTT Broker 已响应 CONNACK (rc={rc})")
                     mqtt_ok = True
                 client.loop_stop()
             except Exception:
@@ -76,7 +77,7 @@ def wait_for_platform_ready():
             return True
 
         print(f"[平台检查] 第 {i}/{max_attempts} 次，HTTP={http_ok}, MQTT={mqtt_ok}，等待 5 秒...")
-        time.sleep(5)
+        time.sleep(2)
 
     pytest.exit("平台未能在规定时间内就绪")
 

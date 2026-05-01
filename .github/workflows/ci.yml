@@ -66,7 +66,7 @@ jobs:
           path: test_jetlinks/allure-results/
 
       - name: Generate Allure report
-        uses: simple-elf/allure-report-action@v1
+        uses: step-security/allure-report-action@v1
         if: always()
         with:
           allure_results: allure-results

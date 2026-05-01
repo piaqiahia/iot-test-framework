@@ -1,0 +1,12 @@
+{
+  "修改前": {
+    "name": "test_update_product",
+    "classifiedName": "智能电力",
+    "describe": "这是一个自动化测试创建的产品，用完即删"
+  },
+  "修改后": {
+    "name": "new_name_multiple_update",
+    "classifiedName": "智能家居",
+    "describe": "修改后的描述"
+  }
+}

@@ -8,4 +8,3 @@ services:
   jetlinks:
     ports:
       - "8848:8848"
-      - "1885:1885"   # MQTT Broker 端口

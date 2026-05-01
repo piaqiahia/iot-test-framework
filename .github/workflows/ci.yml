@@ -48,11 +48,10 @@ jobs:
         working-directory: test_jetlinks
         env:
           PYTHONPATH: ${{ github.workspace }}
-          ALLURE_ENABLED: true
         run: |
-          pytest --alluredir=allure-results -s --force-exit || true
+          pytest --alluredir=allure-results -s || true
           echo "测试完成，查看 allure-results..."
-          ls -la allure-results/ || echo "目录不存在"
+          ls -la allure-results/ || echo "allure-results 目录不存在，可能没有收集到测试用例"
 
       - name: Debug allure-results
         if: always()
@@ -73,8 +72,17 @@ jobs:
         if: always()
         working-directory: test_jetlinks
         run: |
-          # ... 安装 allure ...
-          ./allure-.../bin/allure generate allure-results -o allure-report --clean
+          # 安装 Java 运行环境
+          sudo apt-get update -y && sudo apt-get install -y default-jre-headless
+
+          # 下载 Allure 命令行工具
+          ALLURE_VERSION=2.32.0
+          wget -q https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz
+          tar -xf allure-${ALLURE_VERSION}.tgz
+
+          # 生成 HTML 报告（路径必须与下载解压后的文件夹名一致）
+          ./allure-${ALLURE_VERSION}/bin/allure generate allure-results -o allure-report --clean
+
           echo "报告生成完毕"
           ls -la allure-report/
           

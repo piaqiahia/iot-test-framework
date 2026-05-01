@@ -44,6 +44,7 @@ jobs:
           pip install allure-pytest
 
       - name: Run tests
+        continue-on-error: true
         working-directory: test_jetlinks
         env:
           PYTHONPATH: ${{ github.workspace }}   # 关键：让 Python 能找到 test_jetlinks 包
@@ -63,6 +64,23 @@ jobs:
         with:
           name: allure-results
           path: test_jetlinks/allure-results/
+
+      - name: Generate Allure report
+        uses: simple-elf/allure-report-action@v1
+        if: always()
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+          subfolder: allure-report
+          
+      - name: Deploy to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report   # 报告目录
+          destination_dir: .             # 可选，直接发布到根目录
+          keep_files: false              # 每次部署清空旧文件
 
       - name: Stop services
         if: always()

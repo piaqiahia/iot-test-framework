@@ -106,9 +106,8 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./allure-report   # 报告目录
-          destination_dir: .             # 可选，直接发布到根目录
-          keep_files: false              # 每次部署清空旧文件
+          publish_dir: ./test_jetlinks/allure-report   # 修正这里
+          keep_files: false
 
       - name: Stop services
         if: always()

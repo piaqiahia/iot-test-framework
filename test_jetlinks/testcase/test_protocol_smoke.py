@@ -156,7 +156,7 @@ class TestProtocolManagement:
             client.on_connect = on_connect
 
             try:
-                client.connect("127.0.0.1", 1883, keepalive=10)
+                client.connect("127.0.0.1", 1885, keepalive=10)
                 client.loop_start()
             except Exception as e:
                 logger.warning(f"TCP 连接失败: {e}")

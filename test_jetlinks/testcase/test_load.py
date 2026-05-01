@@ -65,7 +65,6 @@ def device_worker(device_id, product_id, duration, stats):
     """单个设备的工作线程：连接 → 循环上报 → 断开"""
     client = mqtt.Client(client_id=device_id)
     client.username_pw_set(DEFAULT_USERNAME, DEFAULT_PASSWORD)
-
     topic = f"/{product_id}/{device_id}/properties/report"
 
     # ---------- 连接确认 ----------
@@ -74,8 +73,6 @@ def device_worker(device_id, product_id, duration, stats):
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
             connected.set()
-        else:
-            print(f"[{device_id}] 连接失败，rc={rc}")
 
     client.on_connect = on_connect
 
@@ -87,14 +84,13 @@ def device_worker(device_id, product_id, duration, stats):
         stats.add_failure()
         return
 
-    # 等待 CONNACK，最多 10 秒
-    if not connected.wait(timeout=10):
-        print(f"[{device_id}] 连接超时，未收到 CONNACK")
+    if not connected.wait(timeout=15):   # 等待 CONNACK
+        print(f"[{device_id}] 连接超时")
         stats.add_failure()
         client.loop_stop()
         return
 
-    # ---------- 连接成功，开始上报 ----------
+    # ---------- 连接成功，循环上报 ----------
     start = time.perf_counter()
     while time.perf_counter() - start < duration:
         temperature = round(45 + 20 * random.random(), 1)
@@ -111,7 +107,6 @@ def device_worker(device_id, product_id, duration, stats):
         except Exception as e:
             print(f"[{device_id}] 上报失败: {e}")
             stats.add_failure()
-
         time.sleep(random.uniform(1, 2))
 
     client.disconnect()

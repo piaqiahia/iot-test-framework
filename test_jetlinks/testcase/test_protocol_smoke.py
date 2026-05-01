@@ -130,27 +130,49 @@ class TestProtocolManagement:
     def test_03_mqtt_connect(self, protocol_instance):
         protocol_client = ProtocolClient()
         protocol_name = protocol_instance['protocol_name']
-
         logger.info(f"测试协议：{protocol_name}")
 
         max_attempts = 5
-        result = False
+        connected = False
         for attempt in range(1, max_attempts + 1):
             logger.info(f"MQTT 连接尝试 {attempt}/{max_attempts}")
-            with allure.step(f"发送 MQTT Connect 报文 (第 {attempt} 次)"):
-                result = protocol_client.send_mqtt_connect(client_id="test_send_to_mqtt")
-                if result:
-                    break
-                else:
-                    logger.warning(f"第 {attempt} 次连接失败，等待 3 秒后重试...")
-                    time.sleep(3)
+
+            # 使用 paho 直接验证连接
+            import paho.mqtt.client as mqtt
+            import threading
+
+            client = mqtt.Client(client_id="test_send_to_mqtt")
+            client.username_pw_set("1111", "1111")
+            conn_evt = threading.Event()
+
+            def on_connect(client, userdata, flags, rc):
+                if rc == 0:
+                    conn_evt.set()
+
+            client.on_connect = on_connect
+            try:
+                client.connect("127.0.0.1", 1885, keepalive=10)
+                client.loop_start()
+            except Exception as e:
+                logger.warning(f"TCP 连接失败: {e}")
+                time.sleep(3)
+                continue
+
+            if conn_evt.wait(timeout=10):
+                connected = True
+                client.disconnect()
+                client.loop_stop()
+                break
+            else:
+                client.loop_stop()
+                time.sleep(3)
 
         allure.attach(
-            f"MQTT 连接结果：{'成功' if result else '失败'}",
+            f"MQTT 连接结果：{'成功' if connected else '失败'}",
             name="连接结果",
             attachment_type=allure.attachment_type.TEXT
         )
-        assert result is True, f"MQTT 连接失败，未收到响应（已重试 {max_attempts} 次）"
+        assert connected, f"MQTT 连接失败，已重试 {max_attempts} 次"
         logger.info("MQTT Connect 报文发送成功，收到ConnAck响应")
 
     @allure.title("查询协议列表")

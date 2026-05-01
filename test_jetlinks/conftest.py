@@ -1154,8 +1154,8 @@ def mqtt_device_simulator(scene_with_device_access):
     # ---------- 启动（带重试） ----------
     print(f"[启动] 连接 {BROKER}:{PORT}，ClientID={CLIENT_ID}")
     wait_for_broker(BROKER, PORT)
-    print("[启动] 等待平台内部服务同步（5秒）...")
-    time.sleep(5)
+    print("[启动] 等待平台内部服务同步（10 秒）...")
+    time.sleep(10)
 
     max_connect_retries = 5
     connection_ok = False
@@ -1164,50 +1164,54 @@ def mqtt_device_simulator(scene_with_device_access):
     for attempt in range(1, max_connect_retries + 1):
         print(f"[连接] 第 {attempt}/{max_connect_retries} 次尝试...")
 
+        # 每次重试都创建全新的客户端，避免旧状态干扰
+        client = mqtt.Client(client_id=CLIENT_ID)
+        client.username_pw_set(USERNAME, PASSWORD)
+        client.on_message = on_message
+
         connection_result_event = threading.Event()
         connection_rc = None
 
-        def on_connect_with_result(client, userdata, flags, rc):
+        def on_connect_retry(client, userdata, flags, rc):
             nonlocal connection_rc
             connection_rc = rc
             connection_result_event.set()
 
-        client.on_connect = on_connect_with_result
+        client.on_connect = on_connect_retry
 
         try:
             client.connect(BROKER, PORT, 60)
+            client.loop_start()
         except Exception as e:
-            print(f"[连接] TCP 连接失败: {e}")
-            time.sleep(2)
+            print(f"[连接] TCP 连接异常: {e}")
+            time.sleep(5)
             continue
 
-        client.loop_start()
-
-        # 等待 CONNACK，最多 10 秒
-        if not connection_result_event.wait(timeout=10):
+        # 等待 CONNACK，最多 15 秒
+        if not connection_result_event.wait(timeout=15):
             print("[连接] 未收到 CONNACK，重试...")
             client.loop_stop()
-            time.sleep(2)
+            time.sleep(5)
             continue
 
         last_rc = connection_rc
         if connection_rc == 0:
-            connection_ok = True
             print("[连接] MQTT 连接成功 (rc=0)")
-            # 连接成功后立刻触发原有 on_connect 逻辑（订阅、首报、状态机）
-            # 注意：on_connect 内部会启动 first_report_event，但这里我们还需要确保它被调用一次
-            # 因为 on_connect 在 on_connect_with_result 里调用了，所以不需要重复调用
+            # 立刻执行原有的 on_connect 逻辑：订阅、首报、启动状态机
+            on_connect(client, None, None, 0)
+            connection_ok = True
             break
         else:
             print(f"[连接] 连接被拒绝，错误码: {connection_rc}")
             client.loop_stop()
-            time.sleep(2)
+            time.sleep(5)
             continue
 
     if not connection_ok:
         raise ConnectionError(f"MQTT 连接失败，最后错误码: {last_rc}")
 
-    # 原有 on_connect 已经在 on_connect_with_result 中被调用，这里只需等待首条上报
+    # 等待首条属性上报（状态机启动后会立即上报一条）
+    print("[连接] 等待首次属性上报...")
     if not thread_control['first_report_event'].wait(timeout=15):
         raise TimeoutError("设备已连接但未在 15 秒内完成首条属性上报")
 

@@ -68,6 +68,17 @@ def device_worker(device_id, product_id, duration, stats):
 
     topic = f"/{product_id}/{device_id}/properties/report"
 
+    # ---------- 连接确认 ----------
+    connected = threading.Event()
+
+    def on_connect(client, userdata, flags, rc):
+        if rc == 0:
+            connected.set()
+        else:
+            print(f"[{device_id}] 连接失败，rc={rc}")
+
+    client.on_connect = on_connect
+
     try:
         client.connect(DEFAULT_BROKER, DEFAULT_PORT, keepalive=60)
         client.loop_start()
@@ -76,7 +87,14 @@ def device_worker(device_id, product_id, duration, stats):
         stats.add_failure()
         return
 
-    # 使用 perf_counter 获取高精度计时
+    # 等待 CONNACK，最多 10 秒
+    if not connected.wait(timeout=10):
+        print(f"[{device_id}] 连接超时，未收到 CONNACK")
+        stats.add_failure()
+        client.loop_stop()
+        return
+
+    # ---------- 连接成功，开始上报 ----------
     start = time.perf_counter()
     while time.perf_counter() - start < duration:
         temperature = round(45 + 20 * random.random(), 1)
@@ -88,13 +106,12 @@ def device_worker(device_id, product_id, duration, stats):
         try:
             msg_info = client.publish(topic, json.dumps(payload), qos=1)
             msg_info.wait_for_publish(timeout=3)
-            latency = (time.perf_counter() - req_start) * 1000  # 转换为毫秒
+            latency = (time.perf_counter() - req_start) * 1000
             stats.add_success(latency)
         except Exception as e:
             print(f"[{device_id}] 上报失败: {e}")
             stats.add_failure()
 
-        # 随机上报间隔（1~2秒），模拟真实心跳
         time.sleep(random.uniform(1, 2))
 
     client.disconnect()

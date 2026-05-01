@@ -10,12 +10,8 @@ from queue import Queue
 from pathlib import Path
 import paho.mqtt.client as mqtt
 import redis
-
 from common.api_client import APIClient
 from test_jetlinks.common.api_client import ProductReadApi, ProductWriteApi, NetworkConfigApi, ProtocolClient, GatewayDeviceBindingClient, DeviceClient, AlarmClient, SceneClient
-
-
-
 
 BASE_URL = "http://localhost:8848"
 USERNAME = "admin"
@@ -1155,42 +1151,70 @@ def mqtt_device_simulator(scene_with_device_access):
     client.on_connect = on_connect
     client.on_message = on_message
 
-    # ---------- 启动 ----------
+    # ---------- 启动（带重试） ----------
     print(f"[启动] 连接 {BROKER}:{PORT}，ClientID={CLIENT_ID}")
     wait_for_broker(BROKER, PORT)
-    print("[启动] 等待平台内部服务同步（5秒）...")
-    time.sleep(5)
+    print("[启动] 等待平台内部服务同步（10 秒）...")
+    time.sleep(10)  # 首次等待延长到 10 秒
 
-    connection_result_event = threading.Event()
-    connection_rc = None
+    max_connect_retries = 5
+    connection_ok = False
+    last_rc = None
 
-    def on_connect_with_result(client, userdata, flags, rc):
-        nonlocal connection_rc  # 正确修改外层变量
-        connection_rc = rc
-        connection_result_event.set()
-        on_connect(client, userdata, flags, rc)  # 继续执行原有逻辑
+    for attempt in range(1, max_connect_retries + 1):
+        print(f"[连接] 第 {attempt}/{max_connect_retries} 次尝试...")
 
-    client.on_connect = on_connect_with_result  # 临时替换回调
+        # 每次重试都重新创建客户端，避免旧状态干扰
+        client = mqtt.Client(client_id=CLIENT_ID)
+        client.username_pw_set(USERNAME, PASSWORD)
+        client.on_message = on_message
 
-    try:
-        client.connect(BROKER, PORT, 60)
-    except Exception as e:
-        raise RuntimeError(f"MQTT TCP 连接调用失败: {e}")
+        connection_result_event = threading.Event()
+        connection_rc = None
 
-    client.loop_start()
+        def on_connect_retry(client, userdata, flags, rc):
+            nonlocal connection_rc
+            connection_rc = rc
+            connection_result_event.set()
+            if rc == 0:
+                # 连接成功，立即执行原有的订阅、首报、状态机启动
+                on_connect(client, userdata, flags, rc)
+            else:
+                print(f"[连接] 连接被拒绝，错误码: {rc}")
 
-    if not connection_result_event.wait(timeout=10):
-        raise TimeoutError("MQTT 连接超时：未收到 Broker 的 CONNACK 应答")
+        client.on_connect = on_connect_retry
 
-    if connection_rc != 0:
-        # 根据实际返回码给出明确错误
-        reason = f"错误码 {connection_rc}"
-        if connection_rc == 4:
-            reason = "认证失败（Bad username or password）"
-        elif connection_rc == 5:
-            reason = "未授权"
-        raise ConnectionError(f"MQTT 连接被拒绝: {reason}")
+        try:
+            client.connect(BROKER, PORT, 60)
+            client.loop_start()
+        except Exception as e:
+            print(f"[连接] TCP 连接异常: {e}")
+            time.sleep(5)
+            continue
 
+        # 等待 CONNACK，最多 15 秒
+        if not connection_result_event.wait(timeout=15):
+            print("[连接] 未收到 CONNACK，重试...")
+            client.loop_stop()
+            time.sleep(5)  # 间隔延长到 5 秒
+            continue
+
+        last_rc = connection_rc
+        if connection_rc == 0:
+            connection_ok = True
+            break
+        else:
+            print(f"[连接] 认证/授权失败，错误码: {connection_rc}")
+            client.loop_stop()
+            time.sleep(5)
+            continue
+
+    if not connection_ok:
+        raise ConnectionError(f"MQTT 连接失败，最后错误码: {last_rc}")
+
+    # 此时 on_connect 已在 on_connect_retry 中被调用，
+    # 内部已经启动了状态机并设置了 first_report_event，直接等待即可
+    print("[连接] 等待首次属性上报...")
     if not thread_control['first_report_event'].wait(timeout=15):
         raise TimeoutError("设备已连接但未在 15 秒内完成首条属性上报")
 

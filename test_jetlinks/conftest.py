@@ -4,6 +4,7 @@ import random
 import uuid
 import time
 import pytest
+import socket
 import allure
 import threading
 from queue import Queue
@@ -17,6 +18,67 @@ BASE_URL = "http://localhost:8848"
 USERNAME = "admin"
 PASSWORD = "123456Qwe"
 JAR_PATH = Path(__file__).parent / "protocol" / "jetlinks-official-protocol-3.2.0-SNAPSHOT.jar"
+
+def _broker_port_open(host, port):
+    """检查 TCP 端口是否开放"""
+    try:
+        with socket.create_connection((host, port), timeout=2):
+            return True
+    except OSError:
+        return False
+
+@pytest.fixture(scope="session", autouse=True)
+def wait_for_platform_ready():
+    """
+    等待 JetLinks 平台 HTTP + MQTT 全部就绪
+    """
+    import requests
+
+    http_url = f"{BASE_URL}/authorize/login"
+    broker_host = "127.0.0.1"
+    broker_port = 1885
+
+    print("[平台检查] 等待 HTTP 和 MQTT 就绪...")
+    max_attempts = 30
+    for i in range(1, max_attempts + 1):
+        http_ok = False
+        mqtt_ok = False
+
+        # 1. 检查 HTTP
+        try:
+            resp = requests.get(http_url, timeout=3)
+            http_ok = True
+        except requests.ConnectionError:
+            pass
+
+        # 2. 检查 MQTT（复用你已有的连接测试）
+        if _broker_port_open(broker_host, broker_port):
+            client = mqtt.Client(client_id="ready_check")
+            client.username_pw_set("1111", "1111")
+            connected = threading.Event()
+
+            def on_connect(client, userdata, flags, rc):
+                if rc == 0:
+                    connected.set()
+
+            client.on_connect = on_connect
+            try:
+                client.connect(broker_host, broker_port, keepalive=10)
+                client.loop_start()
+                if connected.wait(timeout=10):
+                    mqtt_ok = True
+                client.loop_stop()
+            except Exception:
+                pass
+
+        if http_ok and mqtt_ok:
+            print(f"[平台检查] HTTP + MQTT 就绪 (第 {i} 次)")
+            return True
+
+        print(f"[平台检查] 第 {i}/{max_attempts} 次，HTTP={http_ok}, MQTT={mqtt_ok}，等待 5 秒...")
+        time.sleep(5)
+
+    pytest.exit("平台未能在规定时间内就绪")
 
 @pytest.fixture(scope = "session")
 def api_client():
@@ -959,7 +1021,6 @@ def mqtt_device_simulator(scene_with_device_access):
     - 每次上报温度时夹具自行打印，测试侧无需轮询打印
     """
 
-    import socket
     import time
 
     def wait_for_broker(host, port, timeout=30):

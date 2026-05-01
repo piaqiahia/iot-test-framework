@@ -1,0 +1,12 @@
+{
+  "test_duration_seconds": 62.71,
+  "total_requests": 4038,
+  "success": 4038,
+  "failure": 0,
+  "tps": 64.4,
+  "avg_latency_ms": 1.2,
+  "p50_ms": 1.15,
+  "p95_ms": 1.77,
+  "p99_ms": 2.36,
+  "max_latency_ms": 15.64
+}

@@ -1,0 +1,565 @@
+{
+  "message": "success",
+  "result": {
+    "pageIndex": 0,
+    "pageSize": 12,
+    "total": 1,
+    "data": [
+      {
+        "id": "2050267129289510912",
+        "name": "test_binding_list_1777656750396",
+        "description": "这是一个自动化测试创建的绑定体",
+        "provider": "mqtt-server-gateway",
+        "protocol": "2050267129058824192",
+        "transport": "MQTT",
+        "channel": "network",
+        "channelId": "2050267129016881152",
+        "state": {
+          "text": "正常",
+          "value": "enabled"
+        },
+        "channelInfo": {
+          "id": "2050267129016881152",
+          "name": "Gateway_1777656750331",
+          "description": "Auto-created MQTT Gateway for Gateway_1777656750331",
+          "addresses": [
+            {
+              "address": "mqtt://127.0.0.1:1885",
+              "health": 1,
+              "disabled": false,
+              "ok": true,
+              "bad": false
+            }
+          ]
+        },
+        "protocolDetail": {
+          "id": "2050267129058824192",
+          "name": "test_protocol_1777656750342",
+          "description": "自动化测试的协议 - test_protocol_1777656750342",
+          "transports": [
+            {
+              "id": "MQTT",
+              "name": "MQTT",
+              "features": [],
+              "routes": [
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/properties/report",
+                  "upstream": true,
+                  "downstream": false,
+                  "qos": 1,
+                  "group": "属性上报",
+                  "description": "上报物模型属性数据",
+                  "example": "{\"properties\":{\"属性ID\":\"属性值\"}}",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/properties/report"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/properties/read",
+                  "upstream": false,
+                  "downstream": true,
+                  "qos": 1,
+                  "group": "读取属性",
+                  "description": "平台下发读取物模型属性数据指令",
+                  "example": "{\"messageId\":\"消息ID,回复时需要一致.\",\"properties\":[\"属性ID\"]}",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/properties/read"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/properties/read/reply",
+                  "upstream": true,
+                  "downstream": false,
+                  "qos": 1,
+                  "group": "读取属性",
+                  "description": "对平台下发的读取属性指令进行响应",
+                  "example": "{\"messageId\":\"消息ID,与读取指令中的ID一致.\",\"properties\":{\"属性ID\":\"属性值\"}}",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/properties/read/reply"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/properties/write",
+                  "upstream": false,
+                  "downstream": true,
+                  "qos": 1,
+                  "group": "修改属性",
+                  "description": "平台下发修改物模型属性数据指令",
+                  "example": "{\"messageId\":\"消息ID,回复时需要一致.\",\"properties\":{\"属性ID\":\"属性值\"}}",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/properties/write"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/properties/write/reply",
+                  "upstream": true,
+                  "downstream": false,
+                  "qos": 1,
+                  "group": "修改属性",
+                  "description": "对平台下发的修改属性指令进行响应",
+                  "example": "{\"messageId\":\"消息ID,与修改指令中的ID一致.\",\"properties\":{\"属性ID\":\"属性值\"}}",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/properties/write/reply"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/event/{eventId:事件ID}",
+                  "upstream": true,
+                  "downstream": false,
+                  "qos": 1,
+                  "group": "事件上报",
+                  "description": "上报物模型事件数据",
+                  "example": "{\"data\":{\"key\":\"value\"}}",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/event/{eventId:事件ID}"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/function/invoke",
+                  "upstream": false,
+                  "downstream": true,
+                  "qos": 1,
+                  "group": "调用功能",
+                  "description": "平台下发功能调用指令",
+                  "example": "{\"messageId\":\"消息ID,回复时需要一致.\",\"functionId\":\"功能标识\",\"inputs\":[{\"name\":\"参数名\",\"value\":\"参数值\"}]}",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/function/invoke"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/function/invoke/reply",
+                  "upstream": true,
+                  "downstream": false,
+                  "qos": 1,
+                  "group": "调用功能",
+                  "description": "设备响应平台下发的功能调用指令",
+                  "example": "{\"messageId\":\"消息ID,与下发指令中的messageId一致.\",\"output\":\"输出结果,格式与物模型中定义的类型一致\"",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/function/invoke/reply"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/child/{childDeviceId:子设备ID}/{#:子设备相应操作的topic}",
+                  "upstream": true,
+                  "downstream": true,
+                  "qos": 1,
+                  "group": "子设备消息",
+                  "description": "网关上报或者平台下发子设备消息",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/child/{childDeviceId:子设备ID}/{#:子设备相应操作的topic}"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/child-reply/{childDeviceId:子设备ID}/{#:子设备相应操作的topic}",
+                  "upstream": true,
+                  "downstream": true,
+                  "qos": 1,
+                  "group": "子设备消息",
+                  "description": "网关回复平台下发给子设备的指令结果",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/child-reply/{childDeviceId:子设备ID}/{#:子设备相应操作的topic}"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/tags",
+                  "upstream": true,
+                  "downstream": false,
+                  "qos": 1,
+                  "group": "更新标签",
+                  "description": "更新标签数据",
+                  "example": "{\"tags\":{\"key\",\"value\"}}",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/tags"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/online",
+                  "upstream": true,
+                  "downstream": false,
+                  "qos": 1,
+                  "group": "状态管理",
+                  "description": "设备上线",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/online"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/offline",
+                  "upstream": true,
+                  "downstream": false,
+                  "qos": 1,
+                  "group": "状态管理",
+                  "description": "设备离线",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/offline"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/collector/report",
+                  "upstream": true,
+                  "downstream": false,
+                  "qos": 1,
+                  "group": "数采网关",
+                  "description": "上报数采点位数据",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/collector/report"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/collector/read",
+                  "upstream": false,
+                  "downstream": true,
+                  "qos": 1,
+                  "group": "数采网关",
+                  "description": "平台读取点位数据",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/collector/read"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/collector/read/reply",
+                  "upstream": true,
+                  "downstream": false,
+                  "qos": 1,
+                  "group": "数采网关",
+                  "description": "平台读取点位数据结果回复",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/collector/read/reply"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/collector/write",
+                  "upstream": false,
+                  "downstream": true,
+                  "qos": 1,
+                  "group": "数采网关",
+                  "description": "平台修改点位数据",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/collector/write"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/collector/write/reply",
+                  "upstream": true,
+                  "downstream": false,
+                  "qos": 1,
+                  "group": "数采网关",
+                  "description": "平台修改点位数据结果回复",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/collector/write/reply"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/time-sync",
+                  "upstream": true,
+                  "downstream": false,
+                  "qos": 1,
+                  "group": "时间同步",
+                  "example": "{\"messageId\":\"1\"}",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/time-sync"
+                },
+                {
+                  "topic": "/{productId:产品ID}/{deviceId:设备ID}/time-sync/reply",
+                  "upstream": false,
+                  "downstream": true,
+                  "qos": 1,
+                  "group": "时间同步",
+                  "example": "{\"messageId\":\"1\",\"timestamp\":123456789}",
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/time-sync/reply"
+                }
+              ],
+              "document": "### 认证说明\n\nCONNECT报文:\n\n使用`明文认证`时:\n\n```text\nclientId: 设备ID\nusername: secureId\npassword: secureKey\n```\n\n使用`MD5签名`认证时:\n\n```text\nclientId: 设备ID\nusername: secureId+\"|\"+timestamp\npassword: md5(secureId+\"|\"+timestamp+\"|\"+secureKey)\n ```\n\n说明: secureId以及secureKey在创建设备产品或设备实例时进行配置.\ntimestamp为当前时间戳(毫秒),与服务器时间不能相差5分钟.\nmd5为32位,不区分大小写.",
+              "metadata": ""
+            },
+            {
+              "id": "TCP",
+              "name": "TCP",
+              "features": [],
+              "routes": [],
+              "document": "",
+              "metadata": ""
+            },
+            {
+              "id": "UDP",
+              "name": "UDP",
+              "features": [],
+              "routes": [],
+              "metadata": ""
+            },
+            {
+              "id": "HTTP",
+              "name": "HTTP",
+              "features": [],
+              "routes": [
+                {
+                  "group": "属性上报",
+                  "method": [
+                    "POST"
+                  ],
+                  "contentType": [
+                    {
+                      "type": "application",
+                      "subtype": "json",
+                      "parameters": {},
+                      "qualityValue": 1.0,
+                      "wildcardType": false,
+                      "wildcardSubtype": false,
+                      "concrete": true
+                    }
+                  ],
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/properties/report",
+                  "description": "上报物模型属性数据",
+                  "example": "{\"properties\":{\"属性ID\":\"属性值\"}}"
+                },
+                {
+                  "group": "事件上报",
+                  "method": [
+                    "POST"
+                  ],
+                  "contentType": [
+                    {
+                      "type": "application",
+                      "subtype": "json",
+                      "parameters": {},
+                      "qualityValue": 1.0,
+                      "wildcardType": false,
+                      "wildcardSubtype": false,
+                      "concrete": true
+                    }
+                  ],
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/event/{eventId:事件ID}",
+                  "description": "上报物模型事件数据",
+                  "example": "{\"data\":{\"key\":\"value\"}}"
+                },
+                {
+                  "group": "状态管理",
+                  "method": [
+                    "POST"
+                  ],
+                  "contentType": [
+                    {
+                      "type": "application",
+                      "subtype": "json",
+                      "parameters": {},
+                      "qualityValue": 1.0,
+                      "wildcardType": false,
+                      "wildcardSubtype": false,
+                      "concrete": true
+                    }
+                  ],
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/online",
+                  "description": "设备上线"
+                },
+                {
+                  "group": "状态管理",
+                  "method": [
+                    "POST"
+                  ],
+                  "contentType": [
+                    {
+                      "type": "application",
+                      "subtype": "json",
+                      "parameters": {},
+                      "qualityValue": 1.0,
+                      "wildcardType": false,
+                      "wildcardSubtype": false,
+                      "concrete": true
+                    }
+                  ],
+                  "address": "/{productId:产品ID}/{deviceId:设备ID}/offline",
+                  "description": "设备离线"
+                }
+              ],
+              "document": "#### 使用HTTP推送设备数据\n\n上报属性例子:\n\n```http request\nPOST /{productId}/{deviceId}/properties/report\nAuthorization: Bearer {产品或者设备中配置的Token}\nContent-Type: application/json\n\n{\n \"properties\":{\n   \"temp\":38.5\n }\n}\n```\n\n上报事件例子:\n\n```http request\nPOST /{productId}/{deviceId}/event/{eventId}\nAuthorization: Bearer {产品或者设备中配置的Token}\nContent-Type: application/json\n\n{\n \"data\":{\n   \"address\": \"\"\n }\n}\n```",
+              "metadata": ""
+            },
+            {
+              "id": "CoAP",
+              "name": "CoAP",
+              "features": [],
+              "routes": [],
+              "metadata": ""
+            },
+            {
+              "id": "WebSocket",
+              "name": "WebSocket",
+              "features": [],
+              "routes": [
+                {
+                  "address": "/{productId:产品ID}/{productId:设备ID}/socket",
+                  "description": "通过Websocket接入平台",
+                  "path": "/{productId:产品ID}/{productId:设备ID}/socket"
+                }
+              ],
+              "metadata": ""
+            }
+          ]
+        },
+        "transportDetail": {
+          "id": "MQTT",
+          "name": "MQTT",
+          "features": [],
+          "routes": [
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/properties/report",
+              "upstream": true,
+              "downstream": false,
+              "qos": 1,
+              "group": "属性上报",
+              "description": "上报物模型属性数据",
+              "example": "{\"properties\":{\"属性ID\":\"属性值\"}}",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/properties/report"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/properties/read",
+              "upstream": false,
+              "downstream": true,
+              "qos": 1,
+              "group": "读取属性",
+              "description": "平台下发读取物模型属性数据指令",
+              "example": "{\"messageId\":\"消息ID,回复时需要一致.\",\"properties\":[\"属性ID\"]}",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/properties/read"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/properties/read/reply",
+              "upstream": true,
+              "downstream": false,
+              "qos": 1,
+              "group": "读取属性",
+              "description": "对平台下发的读取属性指令进行响应",
+              "example": "{\"messageId\":\"消息ID,与读取指令中的ID一致.\",\"properties\":{\"属性ID\":\"属性值\"}}",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/properties/read/reply"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/properties/write",
+              "upstream": false,
+              "downstream": true,
+              "qos": 1,
+              "group": "修改属性",
+              "description": "平台下发修改物模型属性数据指令",
+              "example": "{\"messageId\":\"消息ID,回复时需要一致.\",\"properties\":{\"属性ID\":\"属性值\"}}",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/properties/write"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/properties/write/reply",
+              "upstream": true,
+              "downstream": false,
+              "qos": 1,
+              "group": "修改属性",
+              "description": "对平台下发的修改属性指令进行响应",
+              "example": "{\"messageId\":\"消息ID,与修改指令中的ID一致.\",\"properties\":{\"属性ID\":\"属性值\"}}",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/properties/write/reply"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/event/{eventId:事件ID}",
+              "upstream": true,
+              "downstream": false,
+              "qos": 1,
+              "group": "事件上报",
+              "description": "上报物模型事件数据",
+              "example": "{\"data\":{\"key\":\"value\"}}",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/event/{eventId:事件ID}"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/function/invoke",
+              "upstream": false,
+              "downstream": true,
+              "qos": 1,
+              "group": "调用功能",
+              "description": "平台下发功能调用指令",
+              "example": "{\"messageId\":\"消息ID,回复时需要一致.\",\"functionId\":\"功能标识\",\"inputs\":[{\"name\":\"参数名\",\"value\":\"参数值\"}]}",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/function/invoke"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/function/invoke/reply",
+              "upstream": true,
+              "downstream": false,
+              "qos": 1,
+              "group": "调用功能",
+              "description": "设备响应平台下发的功能调用指令",
+              "example": "{\"messageId\":\"消息ID,与下发指令中的messageId一致.\",\"output\":\"输出结果,格式与物模型中定义的类型一致\"",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/function/invoke/reply"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/child/{childDeviceId:子设备ID}/{#:子设备相应操作的topic}",
+              "upstream": true,
+              "downstream": true,
+              "qos": 1,
+              "group": "子设备消息",
+              "description": "网关上报或者平台下发子设备消息",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/child/{childDeviceId:子设备ID}/{#:子设备相应操作的topic}"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/child-reply/{childDeviceId:子设备ID}/{#:子设备相应操作的topic}",
+              "upstream": true,
+              "downstream": true,
+              "qos": 1,
+              "group": "子设备消息",
+              "description": "网关回复平台下发给子设备的指令结果",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/child-reply/{childDeviceId:子设备ID}/{#:子设备相应操作的topic}"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/tags",
+              "upstream": true,
+              "downstream": false,
+              "qos": 1,
+              "group": "更新标签",
+              "description": "更新标签数据",
+              "example": "{\"tags\":{\"key\",\"value\"}}",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/tags"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/online",
+              "upstream": true,
+              "downstream": false,
+              "qos": 1,
+              "group": "状态管理",
+              "description": "设备上线",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/online"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/offline",
+              "upstream": true,
+              "downstream": false,
+              "qos": 1,
+              "group": "状态管理",
+              "description": "设备离线",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/offline"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/collector/report",
+              "upstream": true,
+              "downstream": false,
+              "qos": 1,
+              "group": "数采网关",
+              "description": "上报数采点位数据",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/collector/report"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/collector/read",
+              "upstream": false,
+              "downstream": true,
+              "qos": 1,
+              "group": "数采网关",
+              "description": "平台读取点位数据",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/collector/read"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/collector/read/reply",
+              "upstream": true,
+              "downstream": false,
+              "qos": 1,
+              "group": "数采网关",
+              "description": "平台读取点位数据结果回复",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/collector/read/reply"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/collector/write",
+              "upstream": false,
+              "downstream": true,
+              "qos": 1,
+              "group": "数采网关",
+              "description": "平台修改点位数据",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/collector/write"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/collector/write/reply",
+              "upstream": true,
+              "downstream": false,
+              "qos": 1,
+              "group": "数采网关",
+              "description": "平台修改点位数据结果回复",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/collector/write/reply"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/time-sync",
+              "upstream": true,
+              "downstream": false,
+              "qos": 1,
+              "group": "时间同步",
+              "example": "{\"messageId\":\"1\"}",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/time-sync"
+            },
+            {
+              "topic": "/{productId:产品ID}/{deviceId:设备ID}/time-sync/reply",
+              "upstream": false,
+              "downstream": true,
+              "qos": 1,
+              "group": "时间同步",
+              "example": "{\"messageId\":\"1\",\"timestamp\":123456789}",
+              "address": "/{productId:产品ID}/{deviceId:设备ID}/time-sync/reply"
+            }
+          ],
+          "document": "### 认证说明\n\nCONNECT报文:\n\n使用`明文认证`时:\n\n```text\nclientId: 设备ID\nusername: secureId\npassword: secureKey\n```\n\n使用`MD5签名`认证时:\n\n```text\nclientId: 设备ID\nusername: secureId+\"|\"+timestamp\npassword: md5(secureId+\"|\"+timestamp+\"|\"+secureKey)\n ```\n\n说明: secureId以及secureKey在创建设备产品或设备实例时进行配置.\ntimestamp为当前时间戳(毫秒),与服务器时间不能相差5分钟.\nmd5为32位,不区分大小写.",
+          "metadata": ""
+        }
+      }
+    ]
+  },
+  "status": 200,
+  "timestamp": 1777656750414
+}

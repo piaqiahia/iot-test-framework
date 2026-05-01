@@ -1,0 +1,65 @@
+{
+  "id": "dev_full_1777656732714",
+  "name": "dev_full_1777656732714",
+  "photoUrl": "/assets/device-product.png",
+  "protocol": "2050267054265995264",
+  "protocolName": "test_protocol_1777656732509",
+  "transport": "MQTT",
+  "productId": "test_prod_1777656732_8b57",
+  "productName": "\u81ea\u52a8\u5316\u6d4b\u8bd5\u4ea7\u54c1_test_prod_1777656732_8b57",
+  "deviceType": {
+    "text": "\u76f4\u8fde\u8bbe\u5907",
+    "value": "device"
+  },
+  "state": {
+    "text": "\u5728\u7ebf",
+    "value": "online"
+  },
+  "address": "/172.18.0.1:36376",
+  "onlineTime": 1777656743294,
+  "offlineTime": 1777656732773,
+  "createTime": 1777656732719,
+  "registerTime": 1777656732776,
+  "metadata": "{\"properties\": [{\"id\": \"temperature\", \"name\": \"\u6e29\u5ea6\", \"expends\": {\"source\": \"device\", \"type\": [\"read\", \"write\", \"report\"], \"groupId\": \"group_1\", \"groupName\": \"\u5206\u7ec4_1\", \"storageType\": \"ignore\", \"otherEdit\": true}, \"valueType\": {\"type\": \"float\"}}, {\"id\": \"humidity\", \"name\": \"\u6e7f\u5ea6\", \"expends\": {\"source\": \"device\", \"type\": [\"read\", \"write\", \"report\"], \"groupId\": \"group_1\", \"groupName\": \"\u5206\u7ec4_1\"}, \"valueType\": {\"type\": \"float\"}}, {\"id\": \"interval\", \"name\": \"\u5fc3\u8df3\u95f4\u9694\", \"expends\": {\"source\": \"device\", \"type\": [\"read\", \"write\", \"report\"], \"groupId\": \"group_1\", \"groupName\": \"\u5206\u7ec4_1\"}, \"valueType\": {\"type\": \"int\"}}], \"events\": [], \"actions\": []}",
+  "productMetadata": "{\"properties\": [{\"id\": \"temperature\", \"name\": \"\u6e29\u5ea6\", \"expends\": {\"source\": \"device\", \"type\": [\"read\", \"write\", \"report\"], \"groupId\": \"group_1\", \"groupName\": \"\u5206\u7ec4_1\", \"storageType\": \"ignore\", \"otherEdit\": true}, \"valueType\": {\"type\": \"float\"}}, {\"id\": \"humidity\", \"name\": \"\u6e7f\u5ea6\", \"expends\": {\"source\": \"device\", \"type\": [\"read\", \"write\", \"report\"], \"groupId\": \"group_1\", \"groupName\": \"\u5206\u7ec4_1\"}, \"valueType\": {\"type\": \"float\"}}, {\"id\": \"interval\", \"name\": \"\u5fc3\u8df3\u95f4\u9694\", \"expends\": {\"source\": \"device\", \"type\": [\"read\", \"write\", \"report\"], \"groupId\": \"group_1\", \"groupName\": \"\u5206\u7ec4_1\"}, \"valueType\": {\"type\": \"int\"}}], \"events\": [], \"actions\": []}",
+  "independentMetadata": false,
+  "configuration": {
+    "secureId": "1111",
+    "secureKey": "1111",
+    "secureType": "plaintext"
+  },
+  "cachedConfiguration": {},
+  "aloneConfiguration": false,
+  "tags": [],
+  "features": [
+    {
+      "id": "eventNotInsertable",
+      "name": "\u7269\u6a21\u578b\u4e8b\u4ef6\u4e0d\u53ef\u65b0\u589e",
+      "type": "SimpleFeature",
+      "deprecated": false
+    },
+    {
+      "id": "eventNotModifiable",
+      "name": "\u7269\u6a21\u578b\u4e8b\u4ef6\u4e0d\u53ef\u4fee\u6539",
+      "type": "SimpleFeature",
+      "deprecated": false
+    },
+    {
+      "id": "propertyNotModifiable",
+      "name": "\u7269\u6a21\u578b\u5c5e\u6027\u4e0d\u53ef\u4fee\u6539",
+      "type": "SimpleFeature",
+      "deprecated": false
+    },
+    {
+      "id": "propertyNotInsertable",
+      "name": "\u7269\u6a21\u578b\u5c5e\u6027\u4e0d\u53ef\u65b0\u589e",
+      "type": "SimpleFeature",
+      "deprecated": false
+    }
+  ],
+  "accessId": "2050267054215663616",
+  "accessProvider": "mqtt-server-gateway",
+  "accessName": "test_binding_1777656732582",
+  "classifiedId": "-222-",
+  "classifiedName": "\u667a\u80fd\u7535\u529b"
+}

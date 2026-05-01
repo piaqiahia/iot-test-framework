@@ -19,16 +19,25 @@ USERNAME = "admin"
 PASSWORD = "123456Qwe"
 JAR_PATH = Path(__file__).parent / "protocol" / "jetlinks-official-protocol-3.2.0-SNAPSHOT.jar"
 
-@pytest.fixture(scope = "session")
 def api_client():
     """
-    Session 级夹具：整个测试会话只登录一次，所有用例共享 Token
-    适合：功能测试、冒烟测试
+    Session 级夹具：登录时自动重试，确保平台就绪后才会返回客户端。
     """
     client = APIClient(BASE_URL)
-    client.login(USERNAME, PASSWORD)
+    max_retries = 20          # 最多重试 20 次
+    for i in range(1, max_retries + 1):
+        try:
+            print(f"[API登录] 尝试 {i}/{max_retries}...")
+            client.login(USERNAME, PASSWORD)
+            print("[API登录] 登录成功，Token 已注入")
+            break
+        except Exception as e:
+            print(f"[API登录] 登录失败 ({e})，等待 5 秒...")
+            time.sleep(5)
+    else:
+        pytest.fail("无法登录 JetLinks，平台可能未完全启动")
+
     yield client
-    # Teardown: 测试结束后可以做清理，如登出（如果有接口）
     print("\n 测试会话结束")
 
 @pytest.fixture(scope = "session")

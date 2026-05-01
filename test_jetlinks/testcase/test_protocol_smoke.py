@@ -126,18 +126,17 @@ class TestProtocolManagement:
 
     @allure.title("MQTT 协议连接测试")
     @allure.severity(allure.severity_level.CRITICAL)
-    @allure.description("验证MQTT协议能否建立 TCP 连接并收到 ConnAck 响应")
+    @allure.description("验证 MQTT 协议能否建立 TCP 连接并收到 ConnAck 响应")
     def test_03_mqtt_connect(self, protocol_instance):
-        import paho.mqtt.client as mqtt
-        import threading
-
-        logger.info(f"测试协议：{protocol_instance['protocol_name']}")
+        protocol_name = protocol_instance['protocol_name']
+        logger.info(f"测试协议：{protocol_name}")
 
         max_attempts = 10
         connected = False
+
         for attempt in range(1, max_attempts + 1):
             logger.info(f"MQTT 连接尝试 {attempt}/{max_attempts}")
-            client = mqtt.Client(client_id="test_send_to_mqtt")
+            client = mqtt.Client(client_id="test_protocol_conn")
             client.username_pw_set("1111", "1111")
             conn_evt = threading.Event()
 
@@ -146,12 +145,13 @@ class TestProtocolManagement:
                     conn_evt.set()
 
             client.on_connect = on_connect
+
             try:
-                client.connect("127.0.0.1", 1885, keepalive=10)
+                client.connect("127.0.0.1", 1883, keepalive=10)  # 使用正确的 MQTT 端口
                 client.loop_start()
             except Exception as e:
                 logger.warning(f"TCP 连接失败: {e}")
-                time.sleep(5)
+                time.sleep(3)
                 continue
 
             if conn_evt.wait(timeout=10):
@@ -162,7 +162,7 @@ class TestProtocolManagement:
             else:
                 logger.warning("等待 CONNACK 超时")
                 client.loop_stop()
-                time.sleep(5)
+                time.sleep(3)
 
         allure.attach(
             f"MQTT 连接结果：{'成功' if connected else '失败'}",
@@ -170,7 +170,7 @@ class TestProtocolManagement:
             attachment_type=allure.attachment_type.TEXT
         )
         assert connected, f"MQTT 连接失败，已重试 {max_attempts} 次"
-        logger.info("MQTT Connect 报文发送成功，收到ConnAck响应")
+        logger.info("MQTT Connect 报文发送成功，收到 ConnAck 响应")
 
     @allure.title("查询协议列表")
     @allure.severity(allure.severity_level.NORMAL)

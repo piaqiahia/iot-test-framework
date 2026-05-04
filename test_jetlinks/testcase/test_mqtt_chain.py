@@ -43,6 +43,8 @@ class TestDeviceScenarioCompleteLink:
             start = time.time()
             while state['temperature'] < 60.0 and (time.time() - start) < timeout:
                 time.sleep(0.5)
+            warmup_data = f"温度:{state['temperature']}°C, 耗时:{time.time() - start:.1f}s"
+            allure.attach(warmup_data, "升温结束", allure.attachment_type.TEXT)
             assert state['temperature'] >= 60.0, f"超时未升至 60°C"
         print(f"✓ 温度已达标")
 
@@ -52,6 +54,8 @@ class TestDeviceScenarioCompleteLink:
             start = time.time()
             while state['phase'] != 'cooling' and (time.time() - start) < timeout:
                 time.sleep(0.3)
+            phase_info = f"阶段:{state['phase']}, 间隔:{state['interval']}s, 方向:{state['direction']}"
+            allure.attach(phase_info, "降温阶段确认", allure.attachment_type.TEXT)
             assert state['phase'] == 'cooling', f"未进入降温阶段，当前 phase={state['phase']}"
             assert state['interval'] == 2.0
         print(f"✓ 已进入降温阶段")
@@ -62,6 +66,8 @@ class TestDeviceScenarioCompleteLink:
             start = time.time()
             while state['temperature'] > 50.0 and (time.time() - start) < timeout:
                 time.sleep(0.5)
+            cool_info = f"温度:{state['temperature']}°C, 耗时:{time.time() - start:.1f}s"
+            allure.attach(cool_info, "降温结束", allure.attachment_type.TEXT)
             assert state['temperature'] <= 50.0
             print(f"✓ 温度已降至 50°C 以下")
             print(f"✓ 温度已达标")
@@ -94,6 +100,8 @@ class TestDeviceScenarioCompleteLink:
             start = time.time()
             while state['phase'] != 'reheating' and (time.time() - start) < timeout:
                 time.sleep(0.3)
+            reheat_info = f"阶段:{state['phase']}, 间隔:{state['interval']}s"
+            allure.attach(reheat_info, "再升温阶段确认", allure.attachment_type.TEXT)
             assert state['phase'] == 'reheating'
             assert state['interval'] == 5.0
         print(f"✓ 已进入再升温阶段")
@@ -104,6 +112,8 @@ class TestDeviceScenarioCompleteLink:
             start = time.time()
             while state['temperature'] < 65.0 and (time.time() - start) < timeout:
                 time.sleep(0.5)
+            final_info = f"最终温度:{state['temperature']}°C, 阶段:{state['phase']}, 耗时:{time.time() - start:.1f}s"
+            allure.attach(final_info, "模拟结束", allure.attachment_type.TEXT)
             assert state['temperature'] >= 65.0
         print(f"✓ 温度已达 65°C，模拟结束")
 

@@ -75,7 +75,7 @@ class TestProductOperations:
         resp = product_read_api.get_detail(column = "id", value = "prod_001")
 
         assert resp['status'] == 200
-        assert resp['result']['data'][0]['id'] == "prod_001"
+        assert resp['result']['data'][0]['id'] == "prod_001" # 硬编码 可能报错
         assert resp['result']['data'][0]['name'] == "prod_001"
         assert resp['result']['data'][0]['state'] == 1
 

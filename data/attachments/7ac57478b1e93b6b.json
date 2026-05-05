@@ -1,0 +1,35 @@
+{
+  "message": "success",
+  "result": {
+    "id": "2051662897972293632",
+    "name": "SMOKE_TEST_1777989527568",
+    "description": "Auto-created MQTT Gateway for SMOKE_TEST_1777989527568",
+    "type": "MQTT_SERVER",
+    "state": {
+      "text": "正常",
+      "value": "enabled"
+    },
+    "creatorId": "21232f297a57a5a743894a0e4a801fc3",
+    "createTime": 1777989527576,
+    "creatorName": "Administrator",
+    "modifierId": "21232f297a57a5a743894a0e4a801fc3",
+    "modifyTime": 1777989527576,
+    "modifierName": "Administrator",
+    "configuration": {
+      "secure": false,
+      "maxMessageSize": 8192,
+      "publicPort": 1885,
+      "publicHost": "127.0.0.1",
+      "port": 1885,
+      "host": "0.0.0.0"
+    },
+    "shareCluster": true,
+    "typeObject": {
+      "name": "MQTT服务",
+      "text": "MQTT服务",
+      "value": "MQTT_SERVER"
+    }
+  },
+  "status": 200,
+  "timestamp": 1777989527676
+}

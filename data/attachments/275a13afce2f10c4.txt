@@ -1,0 +1,10 @@
+WARNING  test_protocol_smoke:test_protocol_smoke.py:172 第 1 次等待 CONNACK 超时
+WARNING  test_protocol_smoke:test_protocol_smoke.py:172 第 2 次等待 CONNACK 超时
+WARNING  test_protocol_smoke:test_protocol_smoke.py:172 第 3 次等待 CONNACK 超时
+WARNING  test_protocol_smoke:test_protocol_smoke.py:172 第 4 次等待 CONNACK 超时
+WARNING  test_protocol_smoke:test_protocol_smoke.py:172 第 5 次等待 CONNACK 超时
+WARNING  test_protocol_smoke:test_protocol_smoke.py:172 第 6 次等待 CONNACK 超时
+WARNING  test_protocol_smoke:test_protocol_smoke.py:172 第 7 次等待 CONNACK 超时
+WARNING  test_protocol_smoke:test_protocol_smoke.py:172 第 8 次等待 CONNACK 超时
+WARNING  test_protocol_smoke:test_protocol_smoke.py:172 第 9 次等待 CONNACK 超时
+WARNING  test_protocol_smoke:test_protocol_smoke.py:172 第 10 次等待 CONNACK 超时

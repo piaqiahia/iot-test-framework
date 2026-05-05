@@ -1,0 +1,259 @@
+{
+  "message": "success",
+  "result": {
+    "id": "2051664700289888256",
+    "name": "高温告警dev_full_1777989956757",
+    "triggerType": "device",
+    "trigger": {
+      "type": "device",
+      "device": {
+        "source": "fixed",
+        "selector": "fixed",
+        "selectorValues": [
+          {
+            "value": "dev_full_1777989956757",
+            "name": "dev_full_1777989956757"
+          }
+        ],
+        "productId": "test_prod_1777989956_2d88",
+        "operation": {
+          "operator": "reportProperty"
+        }
+      },
+      "typeName": "设备触发"
+    },
+    "parallel": false,
+    "branches": [
+      {
+        "when": [
+          {
+            "type": "and",
+            "termType": "eq",
+            "options": [],
+            "terms": [
+              {
+                "column": "properties.temperature.current",
+                "value": {
+                  "source": "manual",
+                  "value": 60
+                },
+                "type": "and",
+                "termType": "gte",
+                "options": [],
+                "terms": []
+              }
+            ]
+          }
+        ],
+        "shakeLimit": {
+          "enabled": false,
+          "time": 1,
+          "threshold": 1,
+          "continuous": false,
+          "alarmFirst": true,
+          "outputFirst": false,
+          "rolling": false
+        },
+        "then": [
+          {
+            "parallel": false,
+            "actions": [
+              {
+                "executor": "device",
+                "device": {
+                  "source": "fixed",
+                  "upperKey": "",
+                  "selector": "fixed",
+                  "selectorValues": [
+                    {
+                      "value": "dev_full_1777989956757",
+                      "name": "dev_full_1777989956757"
+                    }
+                  ],
+                  "productId": "test_prod_1777989956_2d88",
+                  "message": {
+                    "messageType": "WRITE_PROPERTY",
+                    "properties": {
+                      "interval": {
+                        "value": 2,
+                        "source": "fixed"
+                      }
+                    },
+                    "inputs": []
+                  }
+                },
+                "options": {
+                  "selector": "fixed",
+                  "triggerName": "dev_full_1777989956757",
+                  "productName": "test_prod_1777989956_2d88",
+                  "name": [
+                    "dev_full_1777989956757"
+                  ],
+                  "propertiesName": "interval",
+                  "propertiesValue": 2,
+                  "otherColumns": [],
+                  "columnMap": {},
+                  "type": "设置",
+                  "columns": []
+                },
+                "actionId": 33356854
+              }
+            ]
+          }
+        ],
+        "executeAnyway": true,
+        "branchId": 87662432,
+        "branchName": "高温条件"
+      },
+      {
+        "when": [
+          {
+            "type": "and",
+            "termType": "eq",
+            "options": [],
+            "terms": [
+              {
+                "column": "properties.temperature.current",
+                "value": {
+                  "source": "manual",
+                  "value": 50
+                },
+                "type": "and",
+                "termType": "lte",
+                "options": [],
+                "terms": []
+              }
+            ]
+          }
+        ],
+        "shakeLimit": {
+          "enabled": false,
+          "time": 1,
+          "threshold": 1,
+          "continuous": false,
+          "alarmFirst": true,
+          "outputFirst": false,
+          "rolling": false
+        },
+        "then": [
+          {
+            "parallel": false,
+            "actions": [
+              {
+                "executor": "device",
+                "device": {
+                  "source": "fixed",
+                  "upperKey": "",
+                  "selector": "fixed",
+                  "selectorValues": [
+                    {
+                      "value": "dev_full_1777989956757",
+                      "name": "dev_full_1777989956757"
+                    }
+                  ],
+                  "productId": "test_prod_1777989956_2d88",
+                  "message": {
+                    "messageType": "WRITE_PROPERTY",
+                    "properties": {
+                      "interval": {
+                        "value": 5,
+                        "source": "fixed"
+                      }
+                    },
+                    "inputs": []
+                  }
+                },
+                "options": {
+                  "selector": "fixed",
+                  "triggerName": "dev_full_1777989956757",
+                  "productName": "test_prod_1777989956_2d88",
+                  "name": [
+                    "dev_full_1777989956757"
+                  ],
+                  "propertiesName": "interval",
+                  "propertiesValue": 5,
+                  "otherColumns": [],
+                  "columnMap": {},
+                  "type": "设置",
+                  "columns": []
+                },
+                "actionId": 33356854
+              }
+            ]
+          }
+        ],
+        "executeAnyway": false,
+        "branchId": 52566155,
+        "branchName": "低温条件"
+      }
+    ],
+    "creatorId": "21232f297a57a5a743894a0e4a801fc3",
+    "createTime": 1777989957292,
+    "creatorName": "Administrator",
+    "modifierId": "21232f297a57a5a743894a0e4a801fc3",
+    "modifyTime": 1777989957326,
+    "modifierName": "Administrator",
+    "startTime": 1777989957326,
+    "state": {
+      "text": "正常",
+      "value": "started"
+    },
+    "options": {
+      "trigger": {
+        "name": "dev_full_1777989956757",
+        "extraName": "",
+        "onlyName": false,
+        "type": "属性上报",
+        "typeIcon": "icon-file-upload-outline",
+        "productName": "",
+        "selectorIcon": "icon-shebei1",
+        "action": ""
+      },
+      "when": [
+        {
+          "terms": [
+            [
+              [
+                "温度/当前值",
+                "大于等于",
+                {
+                  "0": 60
+                },
+                "and"
+              ]
+            ]
+          ],
+          "branchName": "条件",
+          "key": 87662432,
+          "executeAnyway": true,
+          "groupIndex": 1
+        },
+        {
+          "terms": [
+            {
+              "termType": "并且",
+              "terms": [
+                [
+                  [
+                    "温度/当前值",
+                    "小于等于",
+                    {
+                      "0": 50
+                    },
+                    "and"
+                  ]
+                ]
+              ]
+            }
+          ],
+          "key": 52566155
+        }
+      ]
+    },
+    "features": [
+      "none"
+    ]
+  },
+  "status": 200,
+  "timestamp": 1777989957349
+}

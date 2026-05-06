@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  test:
+  api-test:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
@@ -107,6 +107,87 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./test_jetlinks/allure-report   # 修正这里
+          keep_files: false
+
+      - name: Stop services
+        if: always()
+        run: |
+          cd docker
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml down
+          cd ..
+          
+  ui-full-tests:
+    # 只在 schedule 事件时运行
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Start all services
+        run: |
+          cd docker
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+          cd ..
+
+      - name: Wait for JetLinks to be ready
+        run: |
+          echo "Waiting for JetLinks API..."
+          for i in {1..60}; do
+            if curl -s http://localhost:8848/authorize/login > /dev/null; then
+              echo "JetLinks is ready!"
+              break
+            fi
+            sleep 3
+          done
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies (including Playwright)
+        working-directory: test_jetlinks
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install allure-pytest pytest-playwright
+          playwright install chromium
+          playwright install-deps chromium
+
+      - name: Run UI full tests
+        working-directory: test_jetlinks
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          # 只跑 UI 标记的用例（你需要在用例上加 @pytest.mark.ui）
+          pytest ui_tests/tests/ -m ui --headed=false --alluredir=allure-ui-results -s || true
+          ls -la allure-ui-results/
+
+      - name: Upload UI Allure results
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: ui-allure-results
+          path: test_jetlinks/allure-ui-results/
+
+      - name: Generate UI Allure report
+        if: always()
+        working-directory: test_jetlinks
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y default-jre-headless
+          ALLURE_VERSION=2.32.0
+          wget -q https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz
+          tar -xf allure-${ALLURE_VERSION}.tgz
+          ./allure-${ALLURE_VERSION}/bin/allure generate allure-ui-results -o allure-ui-report --clean
+
+      - name: Deploy UI report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./test_jetlinks/allure-ui-report
           keep_files: false
 
       - name: Stop services

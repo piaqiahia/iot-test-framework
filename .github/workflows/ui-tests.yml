@@ -1,0 +1,114 @@
+name: IoT UI Tests (Scheduled)
+
+on:
+  schedule:
+    # 北京时间早上 8 点（UTC 0:00）自动跑
+    - cron: '0 0 * * *'
+  workflow_dispatch:   # 允许手动触发
+
+jobs:
+  ui-tests:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      # ---------- 启动环境 ----------
+      - name: Start all services (JetLinks + DB + MQTT)
+        run: |
+          cd docker
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+          cd ..
+
+      - name: Wait for JetLinks API
+        run: |
+          echo "Waiting for JetLinks API..."
+          for i in {1..60}; do
+            if curl -s http://localhost:8848/authorize/login > /dev/null; then
+              echo "JetLinks is ready!"
+              break
+            fi
+            sleep 3
+          done
+
+      # ---------- 安装依赖（含 Playwright） ----------
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install test & UI dependencies
+        working-directory: test_jetlinks
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install allure-pytest pytest-playwright
+          playwright install chromium
+          playwright install-deps chromium
+
+      - name: Wait for MQTT Broker (port 1885)
+        run: |
+          python -c "
+          import socket, time
+          for i in range(30):
+            try:
+              s = socket.create_connection(('localhost', 1885), timeout=2)
+              s.close()
+              print('MQTT port open')
+              break
+            except Exception:
+              print(f'Waiting for MQTT... ({i+1}/30)')
+              time.sleep(5)
+          "
+
+      # ---------- 执行 UI 用例 ----------
+      - name: Run UI tests
+        continue-on-error: true
+        working-directory: test_jetlinks
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          pytest ui_tests/tests/ -m ui --headed=false --alluredir=allure-ui-results -s || true
+          echo "UI tests completed."
+          ls -la allure-ui-results/ || echo "allure-ui-results not found"
+
+      # ---------- 收集报告数据 ----------
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: ui-allure-results
+          path: test_jetlinks/allure-ui-results/
+
+      # ---------- 生成 Allure 报告 ----------
+      - name: Generate Allure report
+        if: always()
+        working-directory: test_jetlinks
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y default-jre-headless
+          ALLURE_VERSION=2.32.0
+          wget -q https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz
+          tar -xf allure-${ALLURE_VERSION}.tgz
+          ./allure-${ALLURE_VERSION}/bin/allure generate allure-ui-results -o allure-ui-report --clean
+          echo "Allure report generated."
+          ls -la allure-ui-report/
+
+      # ---------- 部署到 GitHub Pages（独立子目录） ----------
+      - name: Deploy UI report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./test_jetlinks/allure-ui-report
+          destination_dir: ui-report          # 关键：报告会发布到 gh-pages 的 ui-report/ 下
+          keep_files: true                    # 保留已有的 API 报告
+
+      # ---------- 清理环境 ----------
+      - name: Stop services
+        if: always()
+        run: |
+          cd docker
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml down
+          cd ..

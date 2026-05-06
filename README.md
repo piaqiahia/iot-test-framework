@@ -3,6 +3,7 @@
 基于 JetLinks 社区版的端到端质量保障体系，覆盖功能测试、协议可靠性、数据一致性及性能压测，集成 CI/CD 全自动流水线。
 
 # 目录结构
+```
 iot-test-framework/
 ├── docker/                     # Docker Compose 配置文件（含 CI 端口覆写）
 ├── test_jetlinks/              # 测试代码根目录
@@ -14,6 +15,7 @@ iot-test-framework/
 │   └── requirements.txt        # 依赖清单
 ├── .github/workflows/ci.yml    # GitHub Actions 自动化流水线
 └── README.md
+```
 
 # 核心特性
 - **功能覆盖**：产品 CRUD 参数化（异常值/边界值）、协议解析、网关绑定、规则引擎
@@ -55,7 +57,7 @@ iot-test-framework/
 ![img_4.png](img_4.png)
 **多线程模拟100台设备并发压测**
 ![img_5.png](img_5.png)
-## 🐛 发现的缺陷（部分）
+## 发现的缺陷（部分）
 
 | # | 模块  | 缺陷描述 | 严重程度 | 根因分析 |
 |---|-----|---------|---------|---------|

@@ -21,9 +21,8 @@ class DeviceListPage:
         status_elem.wait_for(state="visible", timeout=5000)
         return status_elem.inner_text()
 
-    def click_device(self, device_name):
+    def click_device(self, device_name, labels):
         name_span = self.page.locator("span[style*='font-weight: 600']", has_text=device_name)
         name_span.click()
-        # 等待详情页的特征元素出现
         self.page.wait_for_selector(".deviceDetailHead", timeout=10000)
-        return DeviceDetailsPage(self.page)
+        return DeviceDetailsPage(self.page, labels)

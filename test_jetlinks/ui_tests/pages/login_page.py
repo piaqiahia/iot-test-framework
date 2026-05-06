@@ -3,7 +3,7 @@ class LoginPage:
         self.page = page
         self.username_input = page.locator("#form_item_username") # 登录框id 优先使用id
         self.password_input = page.locator("#form_item_password")
-        self.submit_btn = page.get_by_role("button", name="登录")
+        self.submit_btn = page.locator("form button[type='submit']") # 直接找 login-form 里的提交按钮
 
     def goto(self, base_url = "http://localhost:8848"):
         self.page.goto(f"{base_url}/#/login")

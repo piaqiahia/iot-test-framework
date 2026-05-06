@@ -122,7 +122,25 @@ def device_list_page(logged_in_page, test_product_and_device):
 
 # 进入设备详情页
 @pytest.fixture
-def device_detail_page(device_list_page, test_product_and_device):
-    """点击指定设备，返回设备详情页对象"""
+def device_detail_page(device_list_page, test_product_and_device, ui_labels):
     device_name = test_product_and_device["device_name"]
-    return device_list_page.click_device(device_name)
+    return device_list_page.click_device(device_name, ui_labels)
+
+@pytest.fixture
+def ui_labels():
+    """根据环境变量决定使用中文或英文标签"""
+    lang = os.getenv("UI_LANG", "zh")  # 默认中文
+    if lang == "en":
+        return {
+            "product_name": "Product Name",
+            "running_status": "Running Status",
+            "temperature": "Temperature",
+            "humidity": "Humidity"
+        }
+    else:
+        return {
+            "product_name": "产品名称",
+            "running_status": "运行状态",
+            "temperature": "温度",
+            "humidity": "湿度"
+        }

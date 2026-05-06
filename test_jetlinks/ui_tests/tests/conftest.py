@@ -30,6 +30,32 @@ def api_client_ui():
     client.login(TEST_USER, TEST_PASS)  # 假设 APIClient 有 login 方法
     return client
 
+@pytest.fixture(scope="session")
+def init_jetlinks_if_needed(page):
+    page.goto(f"{BASE_URL}/login")
+    page.wait_for_timeout(2000)
+
+    if "/init-home" not in page.url:
+        return   # 已初始化，直接跳过
+
+    # 1. 系统名称
+    page.fill("#form_item_title", "TestOrg")
+    page.click("button.ant-btn-primary.btn-style")
+    page.wait_for_timeout(2000)
+
+    # 2. base-path
+    page.fill("#form_item_base-path", "http://local-host.cn:8848")
+    page.click("button.ant-btn-primary.btn-style")   # 再次点击 确 定
+    page.wait_for_timeout(2000)
+
+    # 3. （如果页面需要设置管理员密码，请手动填完这一步找到密码输入框的 id）
+    # page.fill("#form_item_password", "admin1234")   # 待确认
+
+    page.click("button.ant-btn-primary")   # 保存修改
+    page.wait_for_timeout(3000)
+
+    assert "/init-home" not in page.url
+
 # 造数夹具 只创建产品和设备
 @pytest.fixture
 def test_product_and_device(api_client_ui):

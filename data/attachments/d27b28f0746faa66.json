@@ -1,0 +1,23 @@
+{
+  "pageIndex": 0,
+  "pageSize": 12,
+  "total": 1,
+  "data": [
+    {
+      "id": "2052060361831182336",
+      "name": "test_protocol_1778084290353",
+      "description": "自动化测试的协议 - test_protocol_1778084290353",
+      "type": "jar",
+      "state": 1,
+      "configuration": {
+        "location": "http://local-host.cn:8848/file/bJ3-FR8s-3WkNAXe4jzIf2BKKNCe2o9a.jar?accessKey=18aed4952eac2b46d70c17d41a691a52"
+      },
+      "creatorId": "21232f297a57a5a743894a0e4a801fc3",
+      "createTime": 1778084290354,
+      "creatorName": "Administrator",
+      "modifierId": "21232f297a57a5a743894a0e4a801fc3",
+      "modifyTime": 1778084290355,
+      "modifierName": "Administrator"
+    }
+  ]
+}

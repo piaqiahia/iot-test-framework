@@ -1,0 +1,1 @@
+阶段:cooling, 间隔:2.0s, 方向:decreasing

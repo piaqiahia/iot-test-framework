@@ -1,0 +1,31 @@
+{
+  "message": "success",
+  "result": {
+    "pageIndex": 0,
+    "pageSize": 1,
+    "total": 1,
+    "data": [
+      {
+        "id": "test_del_1778084288888",
+        "name": "test_product_test_del_1778084288888",
+        "photoUrl": "/assets/device-product.png",
+        "describe": "测试产品",
+        "classifiedId": "-222-",
+        "classifiedName": "智能电力",
+        "deviceType": {
+          "text": "直连设备",
+          "value": "device"
+        },
+        "state": 0,
+        "creatorId": "21232f297a57a5a743894a0e4a801fc3",
+        "createTime": 1778084288894,
+        "creatorName": "Administrator",
+        "modifierId": "21232f297a57a5a743894a0e4a801fc3",
+        "modifyTime": 1778084288894,
+        "modifierName": "Administrator"
+      }
+    ]
+  },
+  "status": 200,
+  "timestamp": 1778084288904
+}

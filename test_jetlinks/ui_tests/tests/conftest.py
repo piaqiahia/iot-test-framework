@@ -30,31 +30,6 @@ def api_client_ui():
     client.login(TEST_USER, TEST_PASS)  # 假设 APIClient 有 login 方法
     return client
 
-@pytest.fixture(scope="session")
-def init_jetlinks_if_needed(page):
-    page.goto(f"{BASE_URL}/login")
-    page.wait_for_timeout(2000)
-
-    if "/init-home" not in page.url:
-        return   # 已初始化，直接跳过
-
-    # 1. 系统名称
-    page.fill("#form_item_title", "TestOrg")
-    page.click("button.ant-btn-primary.btn-style")
-    page.wait_for_timeout(2000)
-
-    # 2. base-path
-    page.fill("#form_item_base-path", "http://local-host.cn:8848")
-    page.click("button.ant-btn-primary.btn-style")   # 再次点击 确 定
-    page.wait_for_timeout(2000)
-
-    # 3. （如果页面需要设置管理员密码，请手动填完这一步找到密码输入框的 id）
-    # page.fill("#form_item_password", "admin1234")   # 待确认
-
-    page.click("button.ant-btn-primary")   # 保存修改
-    page.wait_for_timeout(3000)
-
-    assert "/init-home" not in page.url
 
 # 造数夹具 只创建产品和设备
 @pytest.fixture
@@ -120,17 +95,37 @@ def test_product_and_device(api_client_ui):
 # 登录夹具
 @pytest.fixture
 def logged_in_page(page):
+    # 打开登录页，JetLinks 会自动跳转到 /init-home 如果需要初始化
+    page.goto(BASE_URL)
+    page.wait_for_timeout(3000)
+
+    # 如果停留在初始化页面，自动完成初始化向导
+    if "/init-home" in page.url:
+        print("检测到初始化页面，正在自动完成...")
+
+        # 第一步：系统名称
+        page.fill("#form_item_title", "TestOrg")
+        page.click("button.ant-btn-primary.btn-style")
+        page.wait_for_timeout(1500)
+
+        # 第二步：base-path
+        page.fill("#form_item_base-path", "http://local-host.cn:8848")
+        page.click("button.ant-btn-primary.btn-style")
+        page.wait_for_timeout(1500)
+
+        # 第三步：保存修改
+        page.click("button.ant-btn-primary")
+        page.wait_for_timeout(3000)
+
+        # 验证已离开初始化
+        if "/init-home" in page.url:
+            raise Exception("自动初始化失败，请检查步骤和选择器")
+
+        print("初始化完成，准备登录")
+
+    # 现在进行登录
     login_page = LoginPage(page)
-    login_page.goto(BASE_URL)
-    try:
-        login_page.login(TEST_USER, TEST_PASS)
-    except Exception as e:
-        # 打印登录页 HTML 到控制台
-        print("===== LOGIN PAGE HTML (START) =====")
-        print(page.content())
-        print("===== LOGIN PAGE HTML (END) =====")
-        page.screenshot(path="/tmp/login_failed.png")
-        raise e
+    login_page.login(TEST_USER, TEST_PASS)
     yield page
 
 # 导航到设备列表页

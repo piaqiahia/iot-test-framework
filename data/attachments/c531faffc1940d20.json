@@ -1,0 +1,22 @@
+{
+  "message": "success",
+  "result": {
+    "id": "2052057470701723648",
+    "name": "test_alarm_1778083601047",
+    "targetType": "device",
+    "level": 2,
+    "state": {
+      "text": "正常",
+      "value": "enabled"
+    },
+    "description": "这是一个由pytest fixture 自动创建的测试告警",
+    "creatorId": "21232f297a57a5a743894a0e4a801fc3",
+    "createTime": 1778083601054,
+    "creatorName": "Administrator",
+    "modifierId": "21232f297a57a5a743894a0e4a801fc3",
+    "modifyTime": 1778083601054,
+    "modifierName": "Administrator"
+  },
+  "status": 200,
+  "timestamp": 1778083601075
+}

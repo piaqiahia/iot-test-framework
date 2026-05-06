@@ -64,7 +64,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest -m "not ui" --alluredir=allure-results -s || true
+          pytest --ignore=ui_tests --alluredir=allure-results -s || true
           echo "测试完成，查看 allure-results..."
           ls -la allure-results/ || echo "allure-results 目录不存在，可能没有收集到测试用例"
 

@@ -17,3 +17,6 @@ allure-report/
 
 # 其他
 .DS_Store
+
+# docker
+docker/data/

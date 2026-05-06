@@ -94,10 +94,18 @@ def test_product_and_device(api_client_ui):
 # 登录夹具
 @pytest.fixture
 def logged_in_page(page):
-    """Playwright page 完成登录"""
     login_page = LoginPage(page)
     login_page.goto(BASE_URL)
-    login_page.login(TEST_USER, TEST_PASS)
+    try:
+        login_page.login(TEST_USER, TEST_PASS)
+    except Exception as e:
+        os.makedirs("screenshots", exist_ok=True)
+        # 保存完整 HTML，方便直接看按钮的 dom
+        html = page.content()
+        with open("screenshots/login_page.html", "w", encoding="utf-8") as f:
+            f.write(html)
+        page.screenshot(path="screenshots/login_failed.png")
+        raise e
     yield page
 
 # 导航到设备列表页

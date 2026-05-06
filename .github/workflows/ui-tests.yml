@@ -74,6 +74,13 @@ jobs:
           echo "UI tests completed."
           ls -la allure-ui-results/ || echo "allure-ui-results not found"
 
+      - name: Upload debug files (if failed)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-debug
+          path: test_jetlinks/screenshots/
+
       # ---------- 收集报告数据 ----------
       - name: Upload Allure results
         if: always()

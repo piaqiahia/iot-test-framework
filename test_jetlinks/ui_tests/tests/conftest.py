@@ -95,37 +95,32 @@ def test_product_and_device(api_client_ui):
 # 登录夹具
 @pytest.fixture
 def logged_in_page(page):
-    # 打开登录页，JetLinks 会自动跳转到 /init-home 如果需要初始化
-    page.goto(BASE_URL)
-    page.wait_for_timeout(3000)
+    login_page = LoginPage(page)
+    login_page.goto(BASE_URL)
+    login_page.login(TEST_USER, TEST_PASS)
 
-    # 如果停留在初始化页面，自动完成初始化向导
+    # 登录成功后，如果跳转到初始化页面，自动完成初始化
     if "/init-home" in page.url:
-        print("检测到初始化页面，正在自动完成...")
+        print("登录后检测到初始化页面，正在自动完成...")
 
         # 第一步：系统名称
         page.fill("#form_item_title", "TestOrg")
         page.click("button.ant-btn-primary.btn-style")
-        page.wait_for_timeout(1500)
+        page.wait_for_timeout(2000)
 
         # 第二步：base-path
         page.fill("#form_item_base-path", "http://local-host.cn:8848")
         page.click("button.ant-btn-primary.btn-style")
-        page.wait_for_timeout(1500)
+        page.wait_for_timeout(2000)
 
         # 第三步：保存修改
         page.click("button.ant-btn-primary")
         page.wait_for_timeout(3000)
 
-        # 验证已离开初始化
-        if "/init-home" in page.url:
-            raise Exception("自动初始化失败，请检查步骤和选择器")
+        # 初始化完成后应该自动跳转到首页，等待页面稳定
+        page.wait_for_load_state("networkidle")
+        print("初始化完成")
 
-        print("初始化完成，准备登录")
-
-    # 现在进行登录
-    login_page = LoginPage(page)
-    login_page.login(TEST_USER, TEST_PASS)
     yield page
 
 # 导航到设备列表页

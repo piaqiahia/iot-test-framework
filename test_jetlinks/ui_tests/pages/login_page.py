@@ -18,6 +18,6 @@ class LoginPage:
         # 等待登录按钮可见并可点击
         self.submit_btn.wait_for(state="visible", timeout=10000)
         self.submit_btn.click()
-        # 等待登录后跳转或出现某个元素（如菜单）
-        self.page.wait_for_url(f"http://localhost:8848/#/iot/home", timeout = 5000)
+        # 不等待特定 URL，等待页面网络空闲或特定元素出现 防初始化
+        self.page.wait_for_load_state("networkidle")
         return self

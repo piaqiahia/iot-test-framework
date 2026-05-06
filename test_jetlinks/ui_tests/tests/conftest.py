@@ -99,28 +99,36 @@ def logged_in_page(page):
     login_page.goto(BASE_URL)
     login_page.login(TEST_USER, TEST_PASS)
 
-    # 如果登录后进入初始化页面，自动处理
+    # 1. 处理初始化页面（首次登录或新环境）
     if "/init-home" in page.url:
-        print("检测到初始化页面，自动执行...")
+        print("检测到初始化页面，自动填写...")
         try:
             page.fill("#form_item_title", "TestOrg")
-            page.click("button.ant-btn-primary.btn-style")
-            page.wait_for_timeout(1500)
-
             page.fill("#form_item_base-path", "http://local-host.cn:8848")
-            page.click("button.ant-btn-primary.btn-style")
-            page.wait_for_timeout(1500)
+            page.click("button.ant-btn-primary.btn-style")  # 确 定
+            page.wait_for_timeout(3000)
 
-            page.click("button.ant-btn-primary")  # 保存修改
-            page.wait_for_load_state("networkidle")
+            # 如果点击后还在初始化页，再点一次兜底
+            if "/init-home" in page.url:
+                page.click("button.ant-btn-primary.btn-style")
+                page.wait_for_timeout(3000)
+            print("初始化表单提交完成")
         except Exception as e:
             page.screenshot(path="/tmp/init_error.png")
-            raise Exception(f"自动初始化失败: {e}")
+            raise Exception(f"初始化失败: {e}")
 
-    # 如果不在登录页，强制跳转回去
-    if "/login" not in page.url and "/iot/home" not in page.url:
-        page.goto(f"{BASE_URL}/login")
-        page.wait_for_timeout(2000)
+    # 2. 处理主页上的“视图确定”弹窗（出现在首次进入或新环境）
+    if "/init-home" not in page.url:
+        try:
+            confirm_btn = page.locator("button.ant-btn-primary:not(.btn-style)")
+            if confirm_btn.count() > 0:
+                confirm_btn.wait_for(state="visible", timeout=5000)
+                confirm_btn.click()
+                print("已点击主页视图确定按钮")
+                page.wait_for_timeout(2000)
+        except Exception:
+            print("未检测到主页视图确定按钮，跳过")
+
     yield page
 
 # 导航到设备列表页

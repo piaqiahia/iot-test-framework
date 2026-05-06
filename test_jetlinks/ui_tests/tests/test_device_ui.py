@@ -1,3 +1,4 @@
+import pytest
 from playwright.sync_api import expect
 import time
 import allure
@@ -7,6 +8,7 @@ import allure
 @allure.story("调试辅助")
 @allure.title("设备列表页渲染检查（调试截图）")
 @allure.severity(allure.severity_level.MINOR)
+@pytest.mark.ui
 def test_debug_screenshot_manual(device_list_page):
     """【调试】打开列表页，停留长时间，打印文字内容并截图"""
     # 先给页面充足时间加载
@@ -37,6 +39,7 @@ def test_debug_screenshot_manual(device_list_page):
 @allure.story("设备列表页")
 @allure.title("验证设备卡片状态显示")
 @allure.severity(allure.severity_level.CRITICAL)
+@pytest.mark.ui
 def test_device_status_in_list(device_list_page, test_product_and_device):
     """验证状态显示"""
     status = device_list_page.get_device_status(test_product_and_device["device_name"])
@@ -49,6 +52,7 @@ def test_device_status_in_list(device_list_page, test_product_and_device):
 @allure.story("设备列表页")
 @allure.title("验证设备名称在卡片上展示")
 @allure.severity(allure.severity_level.NORMAL)
+@pytest.mark.ui
 def test_device_name_in_list(device_list_page, test_product_and_device):
     """【列表层】验证设备名称在卡片上展示"""
     device_name = test_product_and_device["device_name"]
@@ -61,6 +65,7 @@ def test_device_name_in_list(device_list_page, test_product_and_device):
 @allure.story("设备详情页")
 @allure.title("验证产品名称绑定显示")
 @allure.severity(allure.severity_level.CRITICAL)
+@pytest.mark.ui
 def test_device_detail_product_binding(device_detail_page, test_product_and_device):
     """【详情层】验证产品名称绑定显示正确"""
     expect(device_detail_page.device_name).to_have_text(test_product_and_device["device_name"])

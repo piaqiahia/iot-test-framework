@@ -99,28 +99,28 @@ def logged_in_page(page):
     login_page.goto(BASE_URL)
     login_page.login(TEST_USER, TEST_PASS)
 
-    # 登录成功后，如果跳转到初始化页面，自动完成初始化
+    # 如果登录后进入初始化页面，自动处理
     if "/init-home" in page.url:
-        print("登录后检测到初始化页面，正在自动完成...")
+        print("检测到初始化页面，自动执行...")
+        try:
+            page.fill("#form_item_title", "TestOrg")
+            page.click("button.ant-btn-primary.btn-style")
+            page.wait_for_timeout(1500)
 
-        # 第一步：系统名称
-        page.fill("#form_item_title", "TestOrg")
-        page.click("button.ant-btn-primary.btn-style")
+            page.fill("#form_item_base-path", "http://local-host.cn:8848")
+            page.click("button.ant-btn-primary.btn-style")
+            page.wait_for_timeout(1500)
+
+            page.click("button.ant-btn-primary")  # 保存修改
+            page.wait_for_load_state("networkidle")
+        except Exception as e:
+            page.screenshot(path="/tmp/init_error.png")
+            raise Exception(f"自动初始化失败: {e}")
+
+    # 如果不在登录页，强制跳转回去
+    if "/login" not in page.url and "/iot/home" not in page.url:
+        page.goto(f"{BASE_URL}/login")
         page.wait_for_timeout(2000)
-
-        # 第二步：base-path
-        page.fill("#form_item_base-path", "http://local-host.cn:8848")
-        page.click("button.ant-btn-primary.btn-style")
-        page.wait_for_timeout(2000)
-
-        # 第三步：保存修改
-        page.click("button.ant-btn-primary")
-        page.wait_for_timeout(3000)
-
-        # 初始化完成后应该自动跳转到首页，等待页面稳定
-        page.wait_for_load_state("networkidle")
-        print("初始化完成")
-
     yield page
 
 # 导航到设备列表页

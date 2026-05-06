@@ -22,3 +22,12 @@ class DeviceDetailsPage:
         temp_label = self.running_panel.locator(f"span:has-text('{self.labels['temperature']}')")
         temp_value = temp_label.locator("xpath=following-sibling::span[contains(@class, 'j-ellipsis')]")
         return temp_value.inner_text().strip()
+
+    def get_product_name(self):
+        """返回详情页中‘产品名称’对应的值（不依赖表头文本）"""
+        # 直接获取 ant-descriptions 表格中第二行的 value （第一行是设备名称，第二行是产品名称）
+        # 或者更简单：查找所有 span.j-ellipsis 并取第二个（通常设备名是第一个，产品名是第二个）
+        items = self.page.locator(".ant-descriptions-item-content span.j-ellipsis").all_inner_texts()
+        if len(items) >= 2:
+            return items[1]
+        return ""

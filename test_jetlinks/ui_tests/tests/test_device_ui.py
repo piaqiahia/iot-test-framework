@@ -69,4 +69,6 @@ def test_device_name_in_list(device_list_page, test_product_and_device):
 def test_device_detail_product_binding(device_detail_page, test_product_and_device):
     """【详情层】验证产品名称绑定显示正确"""
     expect(device_detail_page.device_name).to_have_text(test_product_and_device["device_name"])
-    expect(device_detail_page.product_name).to_have_text(test_product_and_device["product_name"])
+    # 使用新方法获取产品名称，不再依赖表头文本
+    product_name = device_detail_page.get_product_name()
+    assert product_name == test_product_and_device["product_name"], f"产品名称不匹配: {product_name}"

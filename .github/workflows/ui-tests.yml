@@ -70,7 +70,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest ui_tests/tests/ -m ui --headed=false --alluredir=allure-ui-results -s || true
+          pytest ui_tests/tests/ -m ui --alluredir=allure-ui-results -s || true
           echo "UI tests completed."
           ls -la allure-ui-results/ || echo "allure-ui-results not found"
 

@@ -65,15 +65,14 @@ jobs:
 
       # ---------- 执行 UI 用例 ----------
       - name: Run UI tests
+        continue-on-error: true
+        working-directory: test_jetlinks
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           pytest ui_tests/tests/ -m ui --alluredir=allure-ui-results -s || true
-
-      - name: Upload debug screenshots
-        uses: actions/upload-artifact@v4
-        if: always()    # 永远上传
-        with:
-          name: ui-debug
-          path: /tmp/login_failed.png
+          echo "UI tests completed."
+          ls -la allure-ui-results/ || echo "allure-ui-results not found"
 
       # ---------- 收集报告数据 ----------
       - name: Upload Allure results

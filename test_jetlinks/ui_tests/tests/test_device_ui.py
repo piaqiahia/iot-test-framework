@@ -72,3 +72,4 @@ def test_device_detail_product_binding(device_detail_page, test_product_and_devi
     # 使用新方法获取产品名称，不再依赖表头文本
     product_name = device_detail_page.get_product_name()
     assert product_name == test_product_and_device["product_name"], f"产品名称不匹配: {product_name}"
+

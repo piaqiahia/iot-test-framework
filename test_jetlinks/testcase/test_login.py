@@ -9,7 +9,7 @@ PASSWORD = "123456Qwe"
 
 @allure.feature("登录模块")
 @allure.story("登录功能测试")
-@allure.epic("JetLinks系统测试")
+@allure.epic("JetLinks物联网平台")
 class TestLogin:
 
     @allure.title("正常登录测试")

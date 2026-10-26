@@ -9,7 +9,7 @@ import time
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-@allure.epic("JetLins物联网平台")
+@allure.epic("JetLinks物联网平台")
 @allure.feature("网络配置/网关管理")
 @allure.story("网关基础功能验证")
 class TestNetworkConfig:

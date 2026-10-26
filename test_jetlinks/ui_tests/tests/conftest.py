@@ -8,7 +8,7 @@ import uuid
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from test_jetlinks.common.api_client import APIClient, DeviceClient
-
+from test_jetlinks.ui_tests.pages.product_page import ProductPage
 from test_jetlinks.ui_tests.pages.login_page import LoginPage
 from test_jetlinks.ui_tests.pages.navigation import Navigation
 from test_jetlinks.ui_tests.pages.device_list_page import DeviceListPage
@@ -168,3 +168,35 @@ def ui_labels():
             "temperature": "温度",
             "humidity": "湿度"
         }
+
+@pytest.fixture
+def http_product_setup(logged_in_page, api_client_ui):
+    """在 UI 上创建并启用一个产品，返回产品信息，测试结束后通过 API 清理"""
+    product_page = ProductPage(logged_in_page)
+    product_page.goto_product_list()
+
+    # 生成唯一产品 ID
+    product_id = f"http_prod_{int(time.time())}_{uuid.uuid4().hex[:4]}"
+    product_name = f"HTTP产品_{product_id}"
+
+    # 创建产品
+    product_page.create_product(product_id, product_name)
+
+    # 关闭创建成功弹窗（如果有的话）
+    try:
+        product_page.close_success_dialog()
+    except Exception:
+        pass
+
+    # 启用产品（内部会处理确认弹窗和成功提示）
+    product_page.enable_product(product_id)
+
+    # 返回产品信息
+    yield {"product_id": product_id, "product_name": product_name}
+
+    # 清理：通过 API 删除产品
+    try:
+        api_client_ui.delete_product(product_id)
+        print(f"已清理产品 {product_id}")
+    except Exception as e:
+        print(f"清理产品失败（可能已删除）: {e}")

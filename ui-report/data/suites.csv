@@ -1,0 +1,10 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"【调试】打开列表页，停留长时间，打印文字内容并截图","18059","设备列表页渲染检查（调试截图）","ui_tests.tests","Tue Oct 27 03:00:51 UTC 2026","passed","Tue Oct 27 03:01:09 UTC 2026","","test_device_ui","",""
+"【列表层】验证设备名称在卡片上展示","12","验证设备名称在卡片上展示","ui_tests.tests","Tue Oct 27 03:01:21 UTC 2026","passed","Tue Oct 27 03:01:21 UTC 2026","","test_device_ui","",""
+"【详情层】验证产品名称绑定显示正确","17","验证产品名称绑定显示","ui_tests.tests","Tue Oct 27 03:01:27 UTC 2026","passed","Tue Oct 27 03:01:27 UTC 2026","","test_device_ui","",""
+"验证状态显示","15","验证设备卡片状态显示","ui_tests.tests","Tue Oct 27 03:01:15 UTC 2026","passed","Tue Oct 27 03:01:15 UTC 2026","","test_device_ui","",""
+"
+验证通过 UI 创建的 HTTP 产品能够成功启用
+http_product_setup 夹具已自动完成创建→关闭提示→启用→关闭提示的全流程
+此处只做结果校验（可扩展）
+","0","通过 UI 创建 HTTP 产品并启用","ui_tests.tests","Tue Oct 27 03:01:27 UTC 2026","broken","Tue Oct 27 03:01:27 UTC 2026","","test_http_device_e2e","",""

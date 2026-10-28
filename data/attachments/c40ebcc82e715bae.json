@@ -1,0 +1,26 @@
+{
+  "message": "success",
+  "result": {
+    "id": "2115333193155178496",
+    "name": "test_binding_1793169708892",
+    "provider": "mqtt-server-gateway",
+    "state": {
+      "text": "正常",
+      "value": "enabled"
+    },
+    "channel": "network",
+    "channelId": "2115333192865771520",
+    "protocol": "2115333192907714560",
+    "transport": "MQTT",
+    "description": "自动化测试创建的绑定体",
+    "creatorId": "21232f297a57a5a743894a0e4a801fc3",
+    "createTime": 1793169708894,
+    "creatorName": "Administrator",
+    "modifierId": "21232f297a57a5a743894a0e4a801fc3",
+    "modifyTime": 1793169708894,
+    "modifierName": "Administrator",
+    "stateTime": 1793169708895
+  },
+  "status": 200,
+  "timestamp": 1793169708898
+}
